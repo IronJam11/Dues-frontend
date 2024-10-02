@@ -8,6 +8,7 @@ const AssignmentSubmissionPage = () => {
     const navigate = useNavigate();
     const [description, setDescription] = useState('');
     const [files, setFiles] = useState([]);
+    const [url, setUrl] = useState(''); // New state for the URL
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const enrollmentNo = localStorage.getItem('enrollmentNo');
@@ -27,6 +28,7 @@ const AssignmentSubmissionPage = () => {
         formData.append('description', description);
         formData.append('enrollment_no', enrollmentNo);
         formData.append('unique_name', unique_name);
+        formData.append('url', url); // Append the URL to the formData
 
         for (let i = 0; i < files.length; i++) {
             formData.append('files', files[i]);
@@ -37,6 +39,7 @@ const AssignmentSubmissionPage = () => {
                 `http://127.0.0.1:8000/assignments/submit-assignment/`, 
                 formData,
                 {
+                    withCredentials: true,
                     headers: {
                         'Content-Type': 'multipart/form-data',
                     },
@@ -67,10 +70,23 @@ const AssignmentSubmissionPage = () => {
                             id="description"
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
-                            className="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none"
+                            className="w-full px-3 py-2 text-white border rounded-lg focus:outline-none"
                             placeholder="Enter a description for your submission"
                             rows="5"
                         ></textarea>
+                    </div>
+                    <div className="mb-4">
+                        <label className="block text-black text-sm font-bold mb-2" htmlFor="url">
+                            URL (Optional)
+                        </label>
+                        <input
+                            id="url"
+                            type="url"
+                            value={url}
+                            onChange={(e) => setUrl(e.target.value)}
+                            className="w-full px-3 py-2 border rounded-lg"
+                            placeholder="Enter a related URL"
+                        />
                     </div>
                     <div className="mb-4">
                         <label className="block text-black text-sm font-bold mb-2" htmlFor="files">

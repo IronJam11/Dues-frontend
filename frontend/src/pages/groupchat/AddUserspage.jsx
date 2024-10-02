@@ -13,13 +13,13 @@ function AddUsersPage() {
     // Fetch all users who are not yet in the group
     const fetchUsers = async () => {
         try {
-            const response = await axios.get('http://127.0.0.1:8000/users/all-users/', {
+            const response = await axios.get('http://127.0.0.1:8000/users/all-users-details/', {
               withCredentials: true,
               headers: {
                 Authorization: `Bearer ${sessionStorage.getItem('jwtToken')}`
               }
             });
-            setUsers(response.data);
+            setUsers(response.data.users);
           } catch (error) {
         console.error('Error fetching users:', error);
       }

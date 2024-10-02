@@ -2,22 +2,30 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // Import the useNavigate hook
 import Navbar from '../../utilities/Navbar-main'; // Adjust the import path if necessary
+import { useAuth } from '../hooks/useAuth';
 
 function UserProjects() {
   const [projects, setProjects] = useState([]);
-  const enrollmentNo = sessionStorage.getItem('enrollmentNo');
+  const isAuthenticated = useAuth();
+  
   const navigate = useNavigate(); // Initialize navigate hook
+ 
 
   useEffect(() => {
     // Fetch the user's projects
+    
+    console.log("hello");
+
+    
     const fetchProjects = async () => {
       try {
-        const response = await axios.get(`http://127.0.0.1:8000/projects/user/${enrollmentNo}/`, {
+        const response = await axios.get(`http://127.0.0.1:8000/projects/user-projects/`, {
           withCredentials: true,
           headers: {
             Authorization: `Bearer ${localStorage.getItem('jwtToken')}`
           }
         });
+        console.log(response.data);
         setProjects(response.data);
       } catch (error) {
         console.error('Error fetching user projects:', error);
@@ -25,7 +33,7 @@ function UserProjects() {
     };
 
     fetchProjects();
-  }, [enrollmentNo]);
+  }, []);
 
   // Handle redirect to create new project page
   const handleNewProject = () => {
@@ -54,8 +62,20 @@ function UserProjects() {
   };
 
   // Handle navigation to group chat
-  const handleGroupChat = (roomname) => {
-    navigate(`project-chat/${enrollmentNo}/${roomname}`); // Navigate to group chat page with the roomname
+  const handleGroupChat = async (roomname) => {
+    try{
+      const response = await axios.get("http://127.0.0.1:8000/users/get-enrollmentNo/", {withCredentials : true});
+      const enrollmentNo = response.data.enrollmentNo
+      console.log(enrollmentNo);
+      navigate(`project-chat/${enrollmentNo}/${roomname}`);
+
+    }
+    catch(error)
+    {
+      console.error(error);
+
+    }
+     // Navigate to group chat page with the roomname
   };
 
   // Handle navigation to assignments

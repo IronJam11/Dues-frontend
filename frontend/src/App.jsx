@@ -2,14 +2,8 @@ import React from 'react';
 import { Routes, Route, Router } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/auth/LoginPage';
-import LoginPage2 from './pages/auth/LoginPage2';
 import RegisterPage from './pages/auth/RegisterPage';
-// import SendEmailPage from './pages/EmailPage';
 import UploadAssignment from './pages/assignment/create-assignment';
-// import ProfileImageUpload from './pages/pre-existing/ImagePage';
-// import CreateRoomPage from './pages/GroupchatPage';
-// import GroupChatPage from './pages/pre-existing/GroupPage';
-// import Groups from './pages/Groups';
 import AssignmentPage from './pages/assignment/AllAssignemtsPage';
 import UserProfilesPage from './pages/user_profiles/usersHomepage';
 import UpdateUserDetails from './pages/user_profiles/editProfile';
@@ -24,6 +18,8 @@ import UserProjects from './pages/projects/Users-projects';
 import GroupChatPage from './pages/groupchat/GroupPage';
 import AddUsersPage from './pages/groupchat/AddUserspage';
 import CookiesPage from './pages/debug/CookiePage';
+import UserDetailsPage from './pages/auth/LoginPage2';
+import ReviewSubmissionPage from './pages/assignment/review/ReviewAssignmentPage';
 
 function App() {
   return (
@@ -32,7 +28,7 @@ function App() {
 
       {/* auth  */}
       <Route path="/loginpage" element={<LoginPage />} />
-      <Route path="/loginpage/:enrollmentNo" element = {<LoginPage2 />} />
+      <Route path="/loginpage/:enrollmentNo" element = {<UserDetailsPage />} />
       <Route path="/registerpage" element={<RegisterPage />} />
 
       {/* assignment */}
@@ -43,6 +39,8 @@ function App() {
       <Route path="assignments/:unique_name" element = {<AssignmentBasePage/>} />
       <Route path="reviewer/:unique_name" element = {<AssignmentBaseReviewPage/>} />
       <Route path="/submit-assignment/:unique_name" element = {<AssignmentSubmissionPage/>} />
+      <Route path="/submission/review/:unique_submission_name" element = {<ReviewSubmissionPage/>} />
+      
       
       {/* about the user  */}
       <Route path="/user-profiles" element = {<UserProfilesPage/>} />

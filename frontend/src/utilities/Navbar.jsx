@@ -11,8 +11,10 @@ function Navbar() {
         withCredentials: true
       })
       // Redirect to the login page after logout
+      console.log("before deleting :", Cookies.get('jwt'));
+      Cookies.remove('jwt');
+      console.log("after deleting :", Cookies.get('jwt'));
       history.push('/login');
-      localStorage.removeItem('jwtToken');
     } catch (err) {
       console.error('Error during logout:', err.message);
     }

@@ -39,11 +39,9 @@ function LoginPage() {
       await axios.post("http://127.0.0.1:8000/users/logout/", {}, {
         withCredentials: true, // Ensure cookies are included in the request
       });
-      Cookies.remove('jwtToken'); // Remove JWT cookie
-      Cookies.remove('email'); // Remove email cookie
-      Cookies.remove('enrollmentNo'); // Remove enrollment number cookie
-      sessionStorage.removeItem('jwtToken');
-      sessionStorage.removeItem('enrollmentNo');
+      console.log("before deleting :", Cookies.get('jwt'));
+      Cookies.remove('jwt');
+      console.log("after deleting :", Cookies.get('jwt'));// Remove enrollment number cookie
   
       navigate('/loginpage');
     } catch (error) {
@@ -61,6 +59,8 @@ function LoginPage() {
       });
       console.log(response.data);
       storeToken(response.data.jwt)
+      Cookies.set('jwt',response.data.jwt,{expires : 1});
+      console.log('cookies set to: ',Cookies.get('jwt'));
       sessionStorage.setItem('enrollmentNo',response.data.enrollmentNo)
       navigate("/homepage");
 

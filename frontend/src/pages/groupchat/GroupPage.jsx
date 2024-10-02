@@ -23,11 +23,14 @@ function GroupChatPage() {
   const fetchRoomDetails = async () => {
     try
     {
+      const response = await axios.get("http://127.0.0.1:8000/users/get-enrollmentNo/", {withCredentials : true});
+      const enrollmentNo = response.data.enrollmentNo;
       const isAdminRequest = await axios.post(`http://127.0.0.1:8000/chats/groupchat/isAdmin/`,
         {
           "slug":room,
           "enrollmentNo":enrollmentNo,
-        }
+
+        }, { withCredentials: true}
       )
       setIsAdmin(isAdminRequest.data.isAdmin);
       console.log(isAdmin);
@@ -116,7 +119,7 @@ function GroupChatPage() {
     try {
       await axios.post(
         `http://127.0.0.1:8000/chats/groupchat/add-admin/`,
-        { email: participantEmail, slug: room, enrollmentNo: sessionStorage.getItem('enrollmentNo')}
+        { email: participantEmail, slug: room, enrollmentNo: enrollmentNo}
       );
       fetchRoomDetails();
     } catch (error) {

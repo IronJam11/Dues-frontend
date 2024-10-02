@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from '../../utilities/Navbar-main'; // Assuming the Navbar is in the same folder
 import { useAuth } from '../hooks/useAuth';
-
+import getCookie from '../utils';
 function AssignmentPage() {
   const [assignmentsToReview, setAssignmentsToReview] = useState([]);
   const [assignmentsToSubmit, setAssignmentsToSubmit] = useState([]);
@@ -11,19 +11,23 @@ function AssignmentPage() {
   const enrollmentNo = sessionStorage.getItem('enrollmentNo');
   const isAuthenticated = useAuth();
 
-  useEffect(() =>
-  {
-    if(!isAuthenticated)
-      return;
-  })
+  // useEffect(() =>
+  // {
+  //   if(!isAuthenticated)
+  //     return;
+  // })
 
   // Fetch assignments to review
   useEffect(() => {
-    if(!isAuthenticated) return;
+    // if(!isAuthenticated) return;
     const fetchAssignmentsToReview = async () => {
       try {
-        const res = await axios.get(`http://127.0.0.1:8000/assignments/get-all/reviewee/${enrollmentNo}/`, {
-          withCredentials: true // Ensure the request includes cookies/JWT
+        const csrfToken = getCookie('csrftoken');
+        const res = await axios.get(`http://127.0.0.1:8000/assignments/get-all/reviewee/`, {
+          withCredentials: true,
+          headers: {
+            'X-CSRF-TOKEN': csrfToken, 
+          },// Ensure the request includes cookies/JWT
         });
         setAssignmentsToReview(res.data.assignments);
       } catch (err) {
@@ -36,10 +40,10 @@ function AssignmentPage() {
 
   // Fetch assignments to submit
   useEffect(() => {
-    if(!isAuthenticated) return;
+    // if(!isAuthenticated) return;
     const fetchAssignmentsToSubmit = async () => {
       try {
-        const res = await axios.get(`http://127.0.0.1:8000/assignments/get-all/reviewer/${enrollmentNo}/`, {
+        const res = await axios.get(`http://127.0.0.1:8000/assignments/get-all/reviewer/`, {
           withCredentials: true // Ensure the request includes cookies/JWT
         });
         setAssignmentsToSubmit(res.data.assignments);
@@ -192,13 +196,8 @@ function AssignmentPage() {
     <p className="text-center text-gray-500">No assignments to submit found.</p>
   )}
 </section>
-
-
-       
-
-     
-
-
+      
+      
       </main>
     </div>
   ): null;

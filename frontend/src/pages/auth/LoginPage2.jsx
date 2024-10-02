@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
-function LoginPage2() {
+function UserDetailsPage() {
   const { enrollmentNo } = useParams();
   const [name, setName] = useState('');
   const [year, setYear] = useState('1');
@@ -159,4 +159,4 @@ function LoginPage2() {
   );
 }
 
-export default LoginPage2;
+export default UserDetailsPage;

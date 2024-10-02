@@ -3,6 +3,8 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth';
 import Navbar from '../utilities/Navbar-main';
+import getCookie from './utils';
+
 
 function Homepage() {
   const [user, setUser] = useState(null);
@@ -21,12 +23,15 @@ function Homepage() {
     // Fetch user details from the API
     const fetchUser = async () => {
       try {
+        // Get the CSRF token from cookies (assuming you have a function to do this)
+        const csrfToken = getCookie('csrftoken');// Function to retrieve CSRF token
         const response = await axios.get(`http://127.0.0.1:8000/users/user-info/`, {
-          withCredentials: true,
+          withCredentials: true, // Ensure cookies are sent with the request
           headers: {
-            'Authorization': `Bearer ${jwtToken}` // Attach JWT token as a Bearer token
-          } // Ensure cookies are sent with the request
+            'X-CSRF-TOKEN': csrfToken, 
+          },
         });
+    
         setUser(response.data); // Assuming the response contains the user object
         console.log(response.data);
       } catch (error) {
@@ -35,7 +40,7 @@ function Homepage() {
     };
 
     fetchUser();
-  }, [isAuthenticated, jwtToken]); // changes if isAuthenticated or jwtToken is updated
+  }, [isAuthenticated, jwtToken]); 
 
   const handleChatClick = () => {
     if (user && user.enrollmentNo) {

@@ -14,13 +14,10 @@ function CreateProject() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:8000/users/all-users/', {
+        const response = await axios.get('http://127.0.0.1:8000/users/all-users-details/', {
           withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('jwtToken')}`
-          }
         });
-        setAvailableUsers(response.data);
+        setAvailableUsers(response.data.users);
       } catch (error) {
         console.error('Error fetching users:', error);
       }
