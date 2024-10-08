@@ -1,43 +1,32 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios'; // Ensure axios is installed
-
-// Utility function to get cookie value by name
-const getCookie = (cookieName) => {
-  const name = cookieName + "=";
-  const decodedCookie = decodeURIComponent(document.cookie);
-  const cookieArray = decodedCookie.split(';');
-  for (let i = 0; i < cookieArray.length; i++) {
-    let cookie = cookieArray[i].trim();
-    if (cookie.indexOf(name) === 0) {
-      return cookie.substring(name.length, cookie.length);
-    }
-  }
-  return "";
-};
-
+import axios from 'axios'; 
+import Cookies from 'js-cookie'
 
 export function useAuth() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    
-    console.log("Cookies: ", document.cookie);
-    const jwtToken = getCookie('jwt'); 
+    const accessToken = Cookies.get('accessToken');
+    const refreshToken = Cookies.get('refreshToken');
 
-    if (jwtToken) {
+    if (accessToken && refreshToken) {
       axios.get('http://127.0.0.1:8000/users/check/', {
-        withCredentials: true, 
+        headers: {
+          'Authorization1': `Bearer ${accessToken}`,
+          'Authorization2': `Bearer ${refreshToken}`,
+        }
       })
         .then(response => {
           console.log(response.data);
-          if (!response.data.valid) {
-            console.log("User is authenticated");
+          if (response.data.valid) {
+            // Set new tokens in cookies
+            Cookies.set('access-token', response.data.access_token, { path: '/' });
+            Cookies.set('refresh-token', response.data.refresh_token, { path: '/' });
             setIsAuthenticated(true);
           } else {
             console.log("Token has expired");
-            alert("Your session has expired. Please log in again.");
             setIsAuthenticated(false);
             document.cookie = 'jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
             navigate('/loginpage'); 
@@ -45,17 +34,15 @@ export function useAuth() {
         })
         .catch(error => {
           console.error("Error verifying token:", error);
-          alert("Error verifying token. Please log in again.");
           setIsAuthenticated(false);
           navigate('/loginpage');
         });
     } else {
       console.log("User is not authenticated");
-      alert("User not authenticated");
       setIsAuthenticated(false);
       navigate('/loginpage');
     }
   }, [navigate]);
 
-  return isAuthenticated; // Return the authentication state
+  return isAuthenticated;
 }

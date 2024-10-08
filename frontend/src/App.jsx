@@ -20,6 +20,8 @@ import AddUsersPage from './pages/groupchat/AddUserspage';
 import CookiesPage from './pages/debug/CookiePage';
 import UserDetailsPage from './pages/auth/LoginPage2';
 import ReviewSubmissionPage from './pages/assignment/review/ReviewAssignmentPage';
+import CookieExample from './pages/debug/SampleCookiepage';
+import  LoadingPage  from './functions/handleLoginWithChanneli';
 
 function App() {
   return (
@@ -30,6 +32,7 @@ function App() {
       <Route path="/loginpage" element={<LoginPage />} />
       <Route path="/loginpage/:enrollmentNo" element = {<UserDetailsPage />} />
       <Route path="/registerpage" element={<RegisterPage />} />
+      <Route path="/loading" element={<LoadingPage/>} />
 
       {/* assignment */}
       <Route path="/:enrollmentNo/:userEnrollmentNo" element={<ChatPage />} />
@@ -46,12 +49,15 @@ function App() {
       <Route path="/user-profiles" element = {<UserProfilesPage/>} />
       <Route path="/edit-profile" element = {<EditProfilePage/>} />
       <Route path="/homepage" element={<HomePage />} />
+      <Route path="/samplecookie" element = {<CookieExample/>} />
+
       
       {/* projects */}
       <Route path="/new-project" element = {<CreateProject/>} />
       <Route path="/projects" element = {<UserProjects/>} />
       <Route path="projects/project-chat/:enrollmentNo/:room" element = {<GroupChatPage/>} />
       <Route path="projects/project-chat/:enrollmentNo/:room/add-users" element = {<AddUsersPage/>} />
+
 
     </Routes>
   );

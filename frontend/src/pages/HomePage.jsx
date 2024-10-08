@@ -1,50 +1,79 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from './hooks/useAuth';
 import Navbar from '../utilities/Navbar-main';
-import getCookie from './utils';
-
+import Cookies from 'js-cookie';
 
 function Homepage() {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
-  const isAuthenticated = useAuth();
-  const jwtToken = sessionStorage.getItem('jwtToken') ? sessionStorage.getItem('jwtToken') : localStorage.getItem('jwtToken');
-  const enrollmentNo = sessionStorage.getItem('enrollmentNo') ? sessionStorage.getItem('enrollmentNo') : localStorage.getItem('enrollmentNo');
-  
+  const isAuthenticated = true; // Assume authentication state
+  const query = new URLSearchParams(window.location.search);
+  const code = query.get('code');
+  const state = query.get('state');
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      return; // If not authenticated, do not fetch data
-    }
+    const fetchUserData = async () => {
+      if (!isAuthenticated) return; // Skip fetching user data if not authenticated
 
-
-    // Fetch user details from the API
-    const fetchUser = async () => {
       try {
-        // Get the CSRF token from cookies (assuming you have a function to do this)
-        const csrfToken = getCookie('csrftoken');// Function to retrieve CSRF token
-        const response = await axios.get(`http://127.0.0.1:8000/users/user-info/`, {
-          withCredentials: true, // Ensure cookies are sent with the request
-          headers: {
-            'X-CSRF-TOKEN': csrfToken, 
-          },
-        });
-    
-        setUser(response.data); // Assuming the response contains the user object
-        console.log(response.data);
+        const token = Cookies.get('accessToken'); // Read token from cookies
+        if (token) {
+          // Fetch user details from the API
+          const response = await axios.get('http://127.0.0.1:8000/users/user-data/', {
+            headers: {
+              'Authorization': `Bearer ${token}`, // Send token as a header
+            },
+            withCredentials: true, // Keep this if you're still sending CSRF or session cookies
+          });
+
+          setUser(response.data);
+        }
       } catch (error) {
         console.error('Error fetching user:', error);
       }
     };
 
-    fetchUser();
-  }, [isAuthenticated, jwtToken]); 
+    // Check if both accessToken and refreshToken cookies exist
+    const accessToken = Cookies.get('accessToken');
+    const refreshToken = Cookies.get('refreshToken');
+
+    if (accessToken && refreshToken) {
+      // If both tokens exist, fetch user data directly
+      fetchUserData();
+    } else if (code && state) {
+      // If code and state are present, set tokens and fetch user data
+      const setTokensAndFetchUser = async () => {
+        try {
+          // Make a request to your backend to exchange code for tokens
+          const response = await axios.get(`http://127.0.0.1:8000/users/callback/?code=${code}&state=${state}`, {
+            withCredentials: true, // Keep this if you're still sending CSRF or session cookies
+          });
+
+          // Set the access token and refresh token in cookies
+          console.log(response.data);
+          const accessToken = response.data.accessToken;
+          const refreshToken = response.data.refreshToken;
+
+          Cookies.set('accessToken', accessToken, { expires: 7 }); // Set cookie for 7 days
+          Cookies.set('refreshToken', refreshToken, { expires: 7 }); // Set cookie for 7 days
+
+          // Fetch user details after setting cookies
+          await fetchUserData(); // Call fetchUserData to update user state
+        } catch (error) {
+          console.error('Error during authentication:', error);
+        }
+      };
+
+      setTokensAndFetchUser();
+    } else {
+      fetchUserData(); // Fetch user data if no code/state
+    }
+  }, [code, state, isAuthenticated]);
 
   const handleChatClick = () => {
     if (user && user.enrollmentNo) {
-      navigate(`/${enrollmentNo}/${user.enrollmentNo}`);
+      navigate(`/${user.enrollmentNo}/${user.enrollmentNo}`);
     }
   };
 
@@ -85,19 +114,5 @@ function Homepage() {
     </>
   ) : null;
 }
-
-// Helper function to get the JWT from cookies
-// const getCookie = (cookieName) => {
-//   const name = cookieName + "=";
-//   const decodedCookie = decodeURIComponent(document.cookie);
-//   const cookieArray = decodedCookie.split(';');
-//   for (let i = 0; i < cookieArray.length; i++) {
-//     let cookie = cookieArray[i].trim();
-//     if (cookie.indexOf(name) === 0) {
-//       return cookie.substring(name.length, cookie.length);
-//     }
-//   }
-//   return "";
-// };
 
 export default Homepage;

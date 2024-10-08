@@ -80,7 +80,6 @@ function CreateProject() {
         {
             "room_name": projectData.name,
             "participant_emails": selectedParticipants,
-            "admin_enrollmentNos": localStorage.getItem('enrollmentNo'),
             "type": "Group Chat",
             "late_joiner_emails": [],
             "slug": roomname,
@@ -88,11 +87,13 @@ function CreateProject() {
         console.log(roomdata);
         try {
             const responsdata = await axios.post('http://127.0.0.1:8000/chats/groupchat/newproject/room/',roomdata, {
+              withCredentials: true,
               headers: {
                 'Content-Type': 'application/json', // Sending data as JSON
                 Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
               },
             });
+          console.log(responsdata.data);
         }
         catch(error)
         {

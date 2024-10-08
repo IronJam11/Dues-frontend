@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'; // Import useNavigate
 import axios from 'axios';
 import Navbar from '../../utilities/Navbar-main';
 import { FaCoins } from 'react-icons/fa';
+
 function GroupChatPage() {
   const { enrollmentNo, room } = useParams();
   const navigate = useNavigate(); // Initialize useNavigate
@@ -16,27 +17,23 @@ function GroupChatPage() {
   const chatMessagesRef = useRef(null);
   const socketRef = useRef(null);
   const initializedRef = useRef(false);
-  const [isAdmin,setIsAdmin] = useState("false");
-  
+  const [isAdmin, setIsAdmin] = useState("false");
 
   // Fetch room details including participants and admins
   const fetchRoomDetails = async () => {
-    try
-    {
-      const response = await axios.get("http://127.0.0.1:8000/users/get-enrollmentNo/", {withCredentials : true});
+    try {
+      const response = await axios.get("http://127.0.0.1:8000/users/get-enrollmentNo/", { withCredentials: true });
       const enrollmentNo = response.data.enrollmentNo;
       const isAdminRequest = await axios.post(`http://127.0.0.1:8000/chats/groupchat/isAdmin/`,
         {
-          "slug":room,
-          "enrollmentNo":enrollmentNo,
-
-        }, { withCredentials: true}
-      )
+          "slug": room,
+          "enrollmentNo": enrollmentNo,
+        }, { withCredentials: true }
+      );
       setIsAdmin(isAdminRequest.data.isAdmin);
-      console.log(isAdmin);
-    } catch(error)
-    {
-      console.error("error",error);
+      console.log("isadmin:- ",isAdmin);
+    } catch (error) {
+      console.error("error", error);
     }
     try {
       const response = await axios.get(
@@ -119,7 +116,7 @@ function GroupChatPage() {
     try {
       await axios.post(
         `http://127.0.0.1:8000/chats/groupchat/add-admin/`,
-        { email: participantEmail, slug: room, enrollmentNo: enrollmentNo}
+        { email: participantEmail, slug: room, enrollmentNo: enrollmentNo }
       );
       fetchRoomDetails();
     } catch (error) {
@@ -145,11 +142,19 @@ function GroupChatPage() {
   const handleSendMessage = (e) => {
     e.preventDefault();
     if (newMessage.trim() === '') return;
-
+  
     if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
       socketRef.current.send(JSON.stringify({ message: newMessage }));
+      
+      // Scroll down to the bottom after sending the message
+      if (chatMessagesRef.current) {
+        setTimeout(() => {
+          chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight;
+        }, 100); // small timeout to ensure the DOM updates before scrolling
+      }
     }
-    setNewMessage('');
+  
+    setNewMessage(''); // Clear the input after sending
   };
 
   // Navigate to Add Users page
@@ -168,14 +173,16 @@ function GroupChatPage() {
   }, []);
 
   return (
+    <>
+    <Navbar />
     <div className="min-h-screen flex flex-col lg:flex-row">
-      <Navbar /> 
+      
       {/* Left Section: Chat */}
       <div className="lg:w-3/4 w-full p-10 lg:p-20 text-center bg-gray-100">
         <h1 className="text-3xl lg:text-4xl text-black font-bold mb-4">
           Chatting with group {roomDetails ? roomDetails.room_name : '...'}
         </h1>
-        
+
         {/* Add Users Button */}
         <button
           onClick={handleAddUsers}
@@ -191,41 +198,51 @@ function GroupChatPage() {
           </p>
         )}
 
-        <div className="p-4 bg-white rounded-lg shadow-md overflow-hidden">
-          <div
-            className="chat-messages space-y-3 overflow-y-auto max-h-96 p-4"
-            ref={chatMessagesRef}
-          >
-            {messages.map((msg, index) => {
-              const currentUser = msg.user
-                ? userDetails[msg.user]
-                : userDetails[msg.enrollmentNo];
-              const profilePicture = currentUser?.profilePicture
-                ? `http://127.0.0.1:8000${currentUser.profilePicture}/`
-                : `http://127.0.0.1:8000${userDetails[msg.enrollmentNo]?.profilePicture}/`;
-              const displayName = currentUser?.name ? currentUser.name : '...';
+<div className="p-4 bg-white rounded-lg shadow-md overflow-hidden">
+  <div
+    className="chat-messages space-y-3 overflow-y-auto max-h-96 p-4"
+    ref={chatMessagesRef}
+  >
+    {messages.map((msg, index) => {
+      const currentUser = msg.user
+        ? userDetails[msg.user]
+        : userDetails[msg.enrollmentNo];
+      const profilePicture = currentUser?.profilePicture
+        ? `http://127.0.0.1:8000${currentUser.profilePicture}/`
+        : `http://127.0.0.1:8000${userDetails[msg.enrollmentNo]?.profilePicture}/`;
+      const displayName = currentUser?.name ? currentUser.name : '...';
 
-              return (
-                <div key={index} className="flex items-start space-x-2">
-                  <img
-                    src={profilePicture}
-                    alt="User"
-                    className="w-10 h-10 rounded-full"
-                  />
-                  <div
-                    className={`${
-                      msg.user === enrollmentNo || msg.enrollmentNo === enrollmentNo
-                        ? 'bg-teal-100 text-black self-end'
-                        : 'bg-gray-200 text-black self-start'
-                    } rounded-lg p-3 max-w-xs lg:max-w-md break-words`}
-                  >
-                    <b>{displayName}</b>: {msg.content}
-                  </div>
-                </div>
-              );
-            })}
+      return (
+        <div key={index} className={`flex ${msg.user === enrollmentNo || msg.enrollmentNo === enrollmentNo ? 'justify-end' : 'justify-start'} space-x-2`}>
+          {!(msg.user === enrollmentNo || msg.enrollmentNo === enrollmentNo) && (
+            <img
+              src={profilePicture}
+              alt="User"
+              className="w-10 h-10 rounded-full"
+            />
+          )}
+          <div
+            className={`${
+              msg.user === enrollmentNo || msg.enrollmentNo === enrollmentNo
+                ? 'bg-teal-100 text-black self-end'
+                : 'bg-gray-200 text-black self-start'
+            } rounded-lg p-3 max-w-xs lg:max-w-md break-words`}
+          >
+            <b>{displayName}</b>: {msg.content}
           </div>
+          {msg.user === enrollmentNo || msg.enrollmentNo === enrollmentNo && (
+            <img
+              src={profilePicture}
+              alt="User"
+              className="w-10 h-10 rounded-full"
+            />
+          )}
         </div>
+      );
+    })}
+  </div>
+</div>
+
 
         {/* Send Message Form */}
         <div className="lg:w-full w-full mt-6 mx-4 lg:mx-auto p-4 bg-white rounded-lg shadow-md">
@@ -239,7 +256,7 @@ function GroupChatPage() {
             />
             <button
               type="submit"
-              className="px-5 py-3 rounded-lg text-white bg-teal-500 hover:bg-teal-600 transition-all duration-200"
+              className="px-5 py-3 rounded-lg text-white bg-teal-500 hover:bg-teal-600"
             >
               Send
             </button>
@@ -248,73 +265,59 @@ function GroupChatPage() {
       </div>
 
       {/* Right Section: Participants and Admins */}
-      <div className="lg:w-1/4 w-full p-6 bg-gray-50 border-t lg:border-t-0 lg:border-l border-gray-200">
-        <h2 className="text-xl font-bold mb-4 text-black">Participants</h2>
-        <div className="space-y-2">
-          {participants.map((participant, index) => (
-            <div key={index} className="flex items-center justify-between">
-              <span className="text-black">
-                {userEmailDetails[participant.email]
-                  ? userEmailDetails[participant.email]['name']
-                  : participant.email}
-              </span>
-              <div className="flex space-x-2">
-                {/* Conditionally render buttons based on isAdmin */}
-                {isAdmin === "true" && (
-                  <>
-                    <button
-                      className="text-red-600"
-                      onClick={() => removeParticipant(participant.email)}
-                    >
-                      Remove
-                    </button>
-                    <button
-                      className="text-blue-600"
-                      onClick={() => promoteToAdmin(participant.email)}
-                    >
-                      Promote to Admin
-                    </button>
-                  </>
-                )}
-              </div>
+      <div className="lg:w-1/4 w-full bg-gray-200 p-4 lg:sticky lg:top-0 lg:max-h-screen lg:overflow-y-auto">
+  <h2 className="text-xl font-semibold mb-2">Participants</h2>
+  <ul className="mb-6">
+    {participants.map((participant) => {
+      const currentUser = participant.enrollmentNo
+      ? userDetails[participant.enrollmentNo]
+      : userDetails[participant.user]; // Fetch details using enrollmentNo
+      const displayName = currentUser?.name ? currentUser.name : '...';
+      return (
+        <li
+          key={participant.enrollmentNo}
+          className="flex justify-between items-center p-2 rounded-lg hover:bg-gray-300"
+        >
+          <span>{displayName}</span> {/* Display name instead of email */}
+          {isAdmin && (
+            <div className="flex space-x-2">
+              <button
+                onClick={() => promoteToAdmin(participant.enrollmentNo)}
+                className="text-blue-500 hover:underline bg-white p-2 rounded-lg"
+              >
+                Promote to Admin
+              </button>
+              <button
+                onClick={() => removeParticipant(participant.enrollmentNo)}
+                className="text-red-500 hover:underline bg-white p-2 rounded-lg"
+              >
+                Remove
+              </button>
             </div>
-          ))}
-        </div>
+          )}
+        </li>
+      );
+    })}
+  </ul>
 
-        <h2 className="text-xl font-bold mb-4 text-black">Admins</h2>
-        <div className="space-y-2">
-          {admins.map((admin, index) => (
-            <div key={index} className="flex items-center justify-between">
-              <span className="text-black">
-                {userEmailDetails[admin.email]
-                  ? userEmailDetails[admin.email]['name']
-                  : admin.email}
-              </span>
-              <div className="flex space-x-2">
-                {/* Conditionally render buttons based on isAdmin */}
-                {isAdmin === "true" && (
-                  <>
-                    <button
-                      className="text-red-600"
-                      onClick={() => removeParticipant(admin.email)}
-                    >
-                      Remove
-                    </button>
-                    <button
-                      className="text-blue-600"
-                      onClick={() => promoteToAdmin(admin.email)}
-                    >
-                      Promote to Admin
-                    </button>
-                  </>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+  <h2 className="text-xl font-semibold mb-2">Admins</h2>
+  <ul>
+    {admins.map((admin) => {
+      const currentUser = admin.enrollmentNo
+      ? userDetails[admin.enrollmentNo]
+      : userDetails[admin.user]; // Fetch details using enrollmentNo
+      const displayName = currentUser?.name ? currentUser.name : '...'; // Fetch details using enrollmentNo
+      return (
+        <li key={admin.email} className="p-2 rounded-lg hover:bg-gray-300">
+          <span>{displayName}</span> {/* Display name instead of email */}
+        </li>
+      );
+    })}
+  </ul>
+</div>
 
     </div>
+    </>
   );
 }
 

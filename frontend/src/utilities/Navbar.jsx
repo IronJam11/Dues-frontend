@@ -1,30 +1,15 @@
 import React from 'react';
-import { Link, useHistory } from 'react-router-dom';
-import axios from 'axios';
+import { Link, useNavigate } from 'react-router-dom';
+ // Make sure to import js-cookie
+import handleLogout from '../functions/handleLogout';
 
-function Navbar() {
-  const history = useHistory();
-
-  const handleLogout = async () => {
-    try {
-      await axios.post('http://127.0.0.1:8000/users/logout/', {}, {
-        withCredentials: true
-      })
-      // Redirect to the login page after logout
-      console.log("before deleting :", Cookies.get('jwt'));
-      Cookies.remove('jwt');
-      console.log("after deleting :", Cookies.get('jwt'));
-      history.push('/login');
-    } catch (err) {
-      console.error('Error during logout:', err.message);
-    }
-  };
+function Navbar() { // Use useNavigate instead of useHistory
 
   return (
     <nav className="bg-gray-800 p-4 flex justify-between items-center">
       <div className="text-white text-2xl font-bold">
         <Link to="/" className="hover:text-gray-300">
-          MyApp
+         DUES
         </Link>
       </div>
       <div>
