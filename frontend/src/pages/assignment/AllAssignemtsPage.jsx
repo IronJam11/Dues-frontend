@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import Navbar from '../../utilities/Navbar-main'; // Assuming the Navbar is in the same folder
+import Navbar from '../../utilities/Navbar-main'; 
 import { useAuth } from '../hooks/useAuth';
 import Cookies from 'js-cookie';
-
+import DeleteAssignment from '../../functions/handleDeleteAssignment'; // Import the DeleteAssignment component
 
 function AssignmentPage() {
   const [assignmentsToReview, setAssignmentsToReview] = useState([]);
@@ -23,7 +23,7 @@ function AssignmentPage() {
             'Authorization': `Bearer ${token}`, 
           },
         });
-        setAssignmentsToReview(res.data.assignments);
+        setAssignmentsToSubmit(res.data.assignments);
       } catch (err) {
         console.error('Error fetching assignments to review:', err.message);
       }
@@ -44,7 +44,7 @@ function AssignmentPage() {
             'Authorization': `Bearer ${token}`, 
           },
         });
-        setAssignmentsToSubmit(res.data.assignments);
+        setAssignmentsToReview(res.data.assignments);
       } catch (err) {
         console.error('Error fetching assignments to submit:', err.message);
       }
@@ -64,13 +64,8 @@ function AssignmentPage() {
     return new Intl.DateTimeFormat('en-US', options).format(new Date(dateString));
   };
 
-  // Handle button actions
-  const handleDeleteAssignment = async (unique_name) => {
-    console.log(`Delete assignment with ID: ${unique_name}`);
-    if (!isAuthenticated) return;
-    const delete_response = await axios.delete(`http://127.0.0.1:8000/assignments/delete/${unique_name}/`);
-    console.log(delete_response.data);
-    alert("Assignment was successfully deleted!");
+  // Handle assignment deletion
+  const handleDeleteAssignment = (unique_name) => {
     setAssignmentsToReview(assignmentsToReview.filter(assignment => assignment.unique_name !== unique_name));
     setAssignmentsToSubmit(assignmentsToSubmit.filter(assignment => assignment.unique_name !== unique_name));
   };
@@ -89,7 +84,7 @@ function AssignmentPage() {
   };
 
   const handleViewAssignmentReviewer = (unique_name) => {
-    navigate(`/reviewer/${unique_name}`);
+    navigate(`${unique_name}`);
   };
 
   return isAuthenticated ? (
@@ -116,7 +111,7 @@ function AssignmentPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {assignmentsToReview.map(assignment => (
                 <div
-                  key={assignment.unique_name} // Using unique_name for the key
+                  key={assignment.unique_name} 
                   className="bg-white shadow-md p-6 rounded-xl text-black"
                 >
                   <h3 className="text-xl font-semibold">{assignment.name}</h3>
@@ -143,12 +138,10 @@ function AssignmentPage() {
                     >
                       View
                     </button>
-                    <button
-                      onClick={() => handleDeleteAssignment(assignment.unique_name)}
-                      className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-3 rounded mb-2"
-                    >
-                      Delete
-                    </button>
+                    <DeleteAssignment 
+                      unique_name={assignment.unique_name} 
+                      onDelete={handleDeleteAssignment} // Pass the delete handler
+                    />
                   </div>
                 </div>
               ))}
@@ -165,7 +158,7 @@ function AssignmentPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {assignmentsToSubmit.map(assignment => (
                 <div
-                  key={assignment.unique_name} // Using unique_name for the key
+                  key={assignment.unique_name}
                   className="bg-white shadow-md p-6 rounded-xl text-black"
                 >
                   <h3 className="text-xl font-semibold">{assignment.name}</h3>
@@ -203,7 +196,7 @@ function AssignmentPage() {
           }
           .flex-wrap > button {
             width: 100%;
-            margin-bottom: 0.5rem; /* Add some space between buttons */
+            margin-bottom: 0.5rem; 
           }
         }
       `}</style>

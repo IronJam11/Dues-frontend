@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from '../../../utilities/Navbar-main';
-
+import Cookies from 'js-cookie'
 const AssignmentSubmissionPage = () => {
     const { unique_name } = useParams();
     const navigate = useNavigate();
@@ -35,16 +35,19 @@ const AssignmentSubmissionPage = () => {
         }
 
         try {
+            const token = Cookies.get('accessToken')
             const response = await axios.post(
                 `http://127.0.0.1:8000/assignments/submit-assignment/`, 
                 formData,
                 {
                     withCredentials: true,
                     headers: {
+                        Authorization: `Bearer ${token}`,
                         'Content-Type': 'multipart/form-data',
                     },
                 }
             );
+            console.log(response.data);
             setSuccess('Submission successful!');
             setError('');
             // navigate(`/assignments/${unique_name}`); // Redirect after submission if needed
@@ -70,7 +73,7 @@ const AssignmentSubmissionPage = () => {
                             id="description"
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
-                            className="w-full px-3 py-2 text-white border rounded-lg focus:outline-none"
+                            className="w-full px-3 py-2 text-black border rounded-lg focus:outline-none"
                             placeholder="Enter a description for your submission"
                             rows="5"
                         ></textarea>

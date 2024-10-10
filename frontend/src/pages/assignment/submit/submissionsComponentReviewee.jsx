@@ -3,8 +3,9 @@ import JSZip from 'jszip';
 import axios from 'axios';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom'; // Importing useNavigate to handle navigation
+import Cookies from 'js-cookie';
 
-const SubmissionsComponent = ({ unique_name }) => {
+const SubmissionsRevieweeComponent = ({ unique_name }) => {
     const [submissions, setSubmissions] = useState([]);
     const [showSubmissions, setShowSubmissions] = useState(false);
     const [error, setError] = useState('');
@@ -12,10 +13,23 @@ const SubmissionsComponent = ({ unique_name }) => {
 
     useEffect(() => {
         const fetchSubmissions = async () => {
+            console.log("Fetching submissions...");
             try {
-                const response = await axios.get(`http://127.0.0.1:8000/assignments/list-submissions/${unique_name}/`);
-                setSubmissions(response.data.submissions);
+                const response = await axios.get(`http://127.0.0.1:8000/assignments/list-my-submissions/${unique_name}/`, {
+                    headers: {
+                        Authorization: `Bearer ${Cookies.get('accessToken')}`
+                    }
+                });
+                
+                console.log('Fetched submissions:', response.data); // Check the whole response first
+
+                if (response.data && Array.isArray(response.data.submissions)) {
+                    setSubmissions(response.data.submissions);
+                } else {
+                    setError('No submissions found in the response.');
+                }
             } catch (error) {
+                console.error('API Error:', error); // Log full error details for debugging
                 setError('Error fetching submissions: ' + (error.response?.data?.error || error.message));
             }
         };
@@ -48,8 +62,7 @@ const SubmissionsComponent = ({ unique_name }) => {
     };
 
     const handleReviewSubmission = (unique_submission_name) => {
-        // Navigate to a review page or open a modal for the selected submission
-        navigate(`/submission/review/${unique_submission_name}`); // Example: Navigating to a review page with the submission ID
+        navigate(`/submission/review/${unique_submission_name}`);
     };
 
     if (error) return <p className="text-red-500">{error}</p>;
@@ -65,32 +78,21 @@ const SubmissionsComponent = ({ unique_name }) => {
                     <p className="text-center text-lg text-gray-600">No submissions found for this assignment.</p>
                 ) : (
                     <ul className="list-disc list-inside space-y-4 mt-4">
-                        {submissions.map((submission) => (
-                            <li key={submission.id} className="p-4 bg-white shadow-md rounded-lg transition duration-200 hover:shadow-lg">
-                                <h1 className="font-semibold text-lg text-black">Submitted by: {submission.user}</h1>
-                                <p className="text-gray-700 mt-2">Description: {submission.description}</p>
-                                <p className="text-gray-700 mt-2">Points Awarded: {submission.points_awarded ?? 'Not graded yet'}</p>
-                                <p className="text-gray-700 mt-2">Submitted on: {new Date(submission.time_submitted).toLocaleString()}</p>
-                                <p className="text-gray-700 mt-2">Unique name:  {submission.unique_submission_name}</p>
-                                <p className="text-gray-700 mt-2 font-semibold">Status: {submission.status}</p>
-                                <div className="mt-2 flex items-center">
-                                    {submission.files.length > 0 && (
-                                        <button
-                                            onClick={() => handleDownloadAllFiles(submission.files)}
-                                            className="bg-pink-200 text-black py-2 px-4 rounded hover:bg-pink-300 mr-2"
-                                        >
-                                            Download All Files
-                                        </button>
-                                    )}
-                                    <button
-                                        onClick={() => handleReviewSubmission(submission.unique_submission_name)}
-                                        className="bg-blue-200 text-black py-2 px-4 rounded hover:bg-blue-300"
-                                    >
-                                        Review
-                                    </button>
-                                </div>
-                            </li>
-                        ))}
+                        {submissions.map((submission) => {
+                            console.log('Processing submission:', submission); // Log submission details for debugging
+
+                            return (
+                                <li key={submission.unique_submission_name} className="p-4 bg-white shadow-md rounded-lg transition duration-200 hover:shadow-lg">
+                                    <h1 className="font-semibold text-lg text-black">Submitted by: {submission.user}</h1>
+                                    <p className="text-gray-700 mt-2">Description: {submission.description}</p>
+                                    <p className="text-gray-700 mt-2">Points Awarded: {submission.points_awarded ?? 'Not graded yet'}</p>
+                                    <p className="text-gray-700 mt-2">Submitted on: {new Date(submission.time_submitted).toLocaleString()}</p>
+                                    <p className="text-gray-700 mt-2">Unique name: {submission.unique_submission_name}</p>
+                                    <p className="text-gray-700 mt-2 font-semibold">Status: {submission.status}</p>
+                                    
+                                </li>
+                            );
+                        })}
                     </ul>
                 )
             )}
@@ -98,4 +100,4 @@ const SubmissionsComponent = ({ unique_name }) => {
     );
 };
 
-export default SubmissionsComponent;
+export default SubmissionsRevieweeComponent;

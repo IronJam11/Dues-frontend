@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Navbar from '../../utilities/Navbar-main'; // Adjust the import path if necessary
+import Navbar from '../../../utilities/Navbar-main'; // Adjust the import path if necessary
 import Cookies from 'js-cookie'
 
 function UploadAssignment() {
@@ -130,7 +130,7 @@ function UploadAssignment() {
           </div>
 
           <div className="mb-4">
-            <label className="block mb-2 text-sm font-medium text-black">Select Reviewees</label>
+            <label className="block mb-2 text-sm font-medium text-black">Select Reviewers</label>
             <div className="grid grid-cols-2 gap-2">
               {availableUsers.map((user) => (
                 <div key={user.email} className="flex items-center">
@@ -148,7 +148,7 @@ function UploadAssignment() {
           </div>
 
           <div className="mb-4">
-            <label className="block mb-2 text-sm font-medium text-black">Select Reviewers</label>
+            <label className="block mb-2 text-sm font-medium text-black">Select Reviewews</label>
             <div className="grid grid-cols-2 gap-2">
               {availableUsers.map((user) => (
                 <div key={user.email} className="flex items-center">
