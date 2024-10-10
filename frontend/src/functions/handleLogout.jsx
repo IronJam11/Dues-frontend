@@ -1,6 +1,6 @@
-import Cookies from 'js-cookie'
-import React from 'react';
+import Cookies from 'js-cookie';
 import axios from 'axios';
+
 export const handleLogout = async (navigate) => {
   console.log("Before logout, cookies: ", document.cookie);
   
@@ -9,12 +9,11 @@ export const handleLogout = async (navigate) => {
   console.log("refresh token: ", refreshToken);
 
   try {
-    // Send the refresh token in the headers for logout
-    const response = await axios.post('http://127.0.0.1:8000/users/logout/', {}, {
-      headers: {
-        'Authorization1': `Bearer ${refreshToken}` // Send refresh token in the Authorization header
-      },
-      withCredentials: true, // Ensure cookies are sent with the request
+    // Send the refresh token in the body for logout
+    const response = await axios.post('http://127.0.0.1:8000/users/logout/', {
+      refresh_token: refreshToken // Send the refresh token in the body
+    }, {
+      withCredentials: true // Ensure cookies are sent with the request
     });
 
     // Log the response from logout
@@ -31,7 +30,7 @@ export const handleLogout = async (navigate) => {
     navigate('/loginpage');
 
   } catch (err) {
-    console.error('Error during logout:', err.message);
+    console.error('Error during logout:', err.response ? err.response.data : err.message);
   }
 };
 

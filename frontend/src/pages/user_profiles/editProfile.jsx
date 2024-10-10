@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Navbar from '../../utilities/Navbar-main'; // Adjust path as necessary
 import { useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie'
+
 
 function EditProfilePage() {
   const navigate = useNavigate();
@@ -17,9 +19,15 @@ function EditProfilePage() {
   // Fetch user data from the API when the component mounts
   useEffect(() => {
     const fetchUserData = async () => {
+      const token = Cookies.get('accessToken');
+      console.log("accessToken:-",token);
       try {
-        const response = await axios.get(`http://127.0.0.1:8000/users/user-info/`, {
+        const response = await axios.get(`http://127.0.0.1:8000/users/user-data/`, {
           withCredentials: true,
+          headers:
+          {
+            Authorization: `Bearer ${Cookies.get('accessToken')}`
+          }
         }); // Adjust URL as necessary
         setFormData({
           year: response.data.year || '',
@@ -58,7 +66,9 @@ function EditProfilePage() {
     try {
       const response = await axios.post('http://127.0.0.1:8000/users/change-user-info/', data, {
         withCredentials: true,
+
         headers: {
+          Authorization: `Bearer ${Cookies.get('accessToken')}`,
           'Content-Type': 'multipart/form-data',
         },
       });

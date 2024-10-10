@@ -14,8 +14,7 @@ export function useAuth() {
     if (accessToken && refreshToken) {
       axios.get('http://127.0.0.1:8000/users/check/', {
         headers: {
-          'Authorization1': `Bearer ${accessToken}`,
-          'Authorization2': `Bearer ${refreshToken}`,
+          'Authorization': `${accessToken} ${refreshToken}`,
         }
       })
         .then(response => {

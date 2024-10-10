@@ -18,7 +18,7 @@ import UserProjects from './pages/projects/Users-projects';
 import GroupChatPage from './pages/groupchat/GroupPage';
 import AddUsersPage from './pages/groupchat/AddUserspage';
 import CookiesPage from './pages/debug/CookiePage';
-import UserDetailsPage from './pages/auth/LoginPage2';
+import UserDetailsPage from './pages/auth/UserDetailsSetupPage';
 import ReviewSubmissionPage from './pages/assignment/review/ReviewAssignmentPage';
 import CookieExample from './pages/debug/SampleCookiepage';
 import  LoadingPage  from './functions/handleLoginWithChanneli';

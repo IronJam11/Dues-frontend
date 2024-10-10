@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'; // Import useNavigate
 import axios from 'axios';
 import Navbar from '../../utilities/Navbar-main';
 import { FaCoins } from 'react-icons/fa';
+import Cookies from 'js-cookie'
 
 function GroupChatPage() {
   const { enrollmentNo, room } = useParams();
@@ -19,10 +20,20 @@ function GroupChatPage() {
   const initializedRef = useRef(false);
   const [isAdmin, setIsAdmin] = useState("false");
 
+
   // Fetch room details including participants and admins
   const fetchRoomDetails = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/users/get-enrollmentNo/", { withCredentials: true });
+      const token = Cookies.get('accessToken')
+      const response = await axios.get("http://127.0.0.1:8000/users/user-data/", 
+        { 
+          withCredentials: true,
+          headers:
+          {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
       const enrollmentNo = response.data.enrollmentNo;
       const isAdminRequest = await axios.post(`http://127.0.0.1:8000/chats/groupchat/isAdmin/`,
         {

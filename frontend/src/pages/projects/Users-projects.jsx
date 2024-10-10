@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // Import the useNavigate hook
 import Navbar from '../../utilities/Navbar-main'; // Adjust the import path if necessary
 import { useAuth } from '../hooks/useAuth';
+import Cookies from 'js-cookie';
 
 function UserProjects() {
   const [projects, setProjects] = useState([]);
@@ -19,10 +20,11 @@ function UserProjects() {
     
     const fetchProjects = async () => {
       try {
+        const token = Cookies.get('accessToken');
         const response = await axios.get(`http://127.0.0.1:8000/projects/user-projects/`, {
           withCredentials: true,
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('jwtToken')}`
+            Authorization: `Bearer ${token}`
           }
         });
         console.log(response.data);
@@ -64,7 +66,15 @@ function UserProjects() {
   // Handle navigation to group chat
   const handleGroupChat = async (roomname) => {
     try{
-      const response = await axios.get("http://127.0.0.1:8000/users/get-enrollmentNo/", {withCredentials : true});
+      const token = Cookies.get('accessToken');
+      const response = await axios.get("http://127.0.0.1:8000/users/user-data/", 
+        {
+          withCredentials : true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        }
+      );
       const enrollmentNo = response.data.enrollmentNo
       console.log(enrollmentNo);
       navigate(`project-chat/${enrollmentNo}/${roomname}`);
@@ -93,7 +103,7 @@ function UserProjects() {
       {/* Main content */}
       <main className="flex-grow flex items-center justify-center">
         <div className="max-w-4xl w-full mx-auto p-6 bg-white shadow-md rounded-lg">
-          <h2 className="text-2xl font-bold mb-4 text-center text-black">My Projects</h2>
+          <h2 className="text-2xl font-bold mb-4 text-center text-black">My Projects </h2>
 
           <div className="flex justify-between items-center mb-6">
             <p className="text-gray-600">{projects.length === 0 ? 'No projects found.' : `${projects.length} project(s) found.`}</p>

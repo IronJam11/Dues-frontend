@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Navbar from '../../utilities/Navbar-main'; // Adjust the import path if necessary
+import Cookies from 'js-cookie'
 
 function UploadAssignment() {
   const [name, setName] = useState('');
@@ -15,13 +16,14 @@ function UploadAssignment() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:8000/users/all-users/', {
+        const response = await axios.get('http://127.0.0.1:8000/users/all-users-details/', {
             withCredentials: true,
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('jwtToken')}`
+            Authorization: `Bearer ${Cookies.get('accessToken')}`,
           }
         });
-        setAvailableUsers(response.data);
+        console.log(response.data)
+        setAvailableUsers(response.data.users);
       } catch (error) {
         console.error('Error fetching users:', error);
       }
@@ -63,7 +65,7 @@ function UploadAssignment() {
       const response = await axios.post('http://localhost:8000/assignments/create-assignment/', data, {
         headers: {
           'Content-Type': 'application/json',
-           Authorization: `Bearer ${localStorage.getItem('jwtToken')}`
+           Authorization: `Bearer ${Cookies.get('accessToken')}`
         },
       });
 
@@ -131,7 +133,7 @@ function UploadAssignment() {
             <label className="block mb-2 text-sm font-medium text-black">Select Reviewees</label>
             <div className="grid grid-cols-2 gap-2">
               {availableUsers.map((user) => (
-                <div key={user.id} className="flex items-center">
+                <div key={user.email} className="flex items-center">
                   <input
                     type="checkbox"
                     value={user.email}
@@ -149,7 +151,7 @@ function UploadAssignment() {
             <label className="block mb-2 text-sm font-medium text-black">Select Reviewers</label>
             <div className="grid grid-cols-2 gap-2">
               {availableUsers.map((user) => (
-                <div key={user.id} className="flex items-center">
+                <div key={user.email} className="flex items-center">
                   <input
                     type="checkbox"
                     value={user.email}

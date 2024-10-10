@@ -10,7 +10,7 @@ function AssignmentPage() {
   const [assignmentsToReview, setAssignmentsToReview] = useState([]);
   const [assignmentsToSubmit, setAssignmentsToSubmit] = useState([]);
   const navigate = useNavigate();
-  const isAuthenticated = true;
+  const isAuthenticated = useAuth();
 
   // Fetch assignments to review
   useEffect(() => {

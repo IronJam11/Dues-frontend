@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Navbar from '../../utilities/Navbar';
+import Navbar from '../../utilities/Navbar-login';
 import handleLogin from '../../functions/handleLogin';
 import handleLoginWithChannelI from '../../functions/handleLoginWithChanneli';
 import { useAuth } from '../hooks/useAuth';

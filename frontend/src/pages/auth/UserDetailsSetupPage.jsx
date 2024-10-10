@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
+import Cookies from 'js-cookie'
+import Navbar from '../../utilities/Navbar-main';
 function UserDetailsPage() {
   const { enrollmentNo } = useParams();
   const [name, setName] = useState('');
@@ -25,26 +27,17 @@ function UserDetailsPage() {
         "name":name,
         "year":year,
         "alias":alias,
-        "isDeveloper":isDeveloper,
+        "isDeveloper":role,
         "profilePicture":profilePic,
         "password": "",
         
     }
     console.log(data);
 
-    const formData = new FormData();
-    formData.append('user', enrollmentNo)
-    formData.append('name', name);
-    formData.append('year', year);
-    formData.append('alias', alias);
-    formData.append('role', role);
-    formData.append('profilePic', profilePic);
-    console.log(formData);
-
     try {
-      const response = await axios.post('http://127.0.0.1:8000/users/login2/', data, {
+      const response = await axios.post('http://127.0.0.1:8000/users/set-user-details/', data, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          Authorization: `bearer ${Cookies.get('accessToken')}`
         },
       });
 
@@ -64,17 +57,7 @@ function UserDetailsPage() {
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Navbar */}
-      <nav className="bg-blue-600 text-white p-4">
-        <div className="flex justify-between items-center container mx-auto">
-          <h1 className="text-xl font-bold">CHATTIE</h1>
-          <button
-            className="px-4 py-2 bg-white text-blue-600 rounded-md hover:bg-gray-200"
-            onClick={handleLogout}
-          >
-            Logout
-          </button>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Registration Form */}
       <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 pt-8">
