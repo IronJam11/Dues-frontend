@@ -61,7 +61,7 @@ const SubmissionsReviewerComponent = ({ unique_name }) => {
         <div>
             <div onClick={() => setShowSubmissions(!showSubmissions)} className="flex items-center cursor-pointer">
                 {showSubmissions ? <FaChevronUp className="ml-2 text-xl" /> : <FaChevronDown className="ml-2 text-xl" />}
-                <h1 className="text-3xl font-bold mt-8 mb-4 text-black"> Submissions:</h1>
+                <h1 className="text-3xl font-bold mt-8 mb-4 text-black"> Submissions to review:</h1>
             </div>
             {showSubmissions && (
                 loading ? (

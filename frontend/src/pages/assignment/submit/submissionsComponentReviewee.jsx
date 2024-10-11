@@ -2,39 +2,36 @@ import React, { useState, useEffect } from 'react';
 import JSZip from 'jszip';
 import axios from 'axios';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom'; // Importing useNavigate to handle navigation
+import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 
 const SubmissionsRevieweeComponent = ({ unique_name }) => {
     const [submissions, setSubmissions] = useState([]);
     const [showSubmissions, setShowSubmissions] = useState(false);
+    const [loading, setLoading] = useState(false); // Loading state for better UX
     const [error, setError] = useState('');
-    const navigate = useNavigate(); // Initialize navigate
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchSubmissions = async () => {
-            console.log("Fetching submissions...");
+            setLoading(true); // Start loading when fetching data
             try {
                 const response = await axios.get(`http://127.0.0.1:8000/assignments/list-my-submissions/${unique_name}/`, {
                     headers: {
                         Authorization: `Bearer ${Cookies.get('accessToken')}`
                     }
                 });
-                
-                console.log('Fetched submissions:', response.data); // Check the whole response first
-
-                if (response.data && Array.isArray(response.data.submissions)) {
-                    setSubmissions(response.data.submissions);
-                } else {
-                    setError('No submissions found in the response.');
-                }
+                setSubmissions(response.data.submissions || []); // Ensure it's always an array
             } catch (error) {
-                console.error('API Error:', error); // Log full error details for debugging
                 setError('Error fetching submissions: ' + (error.response?.data?.error || error.message));
+            } finally {
+                setLoading(false); // Stop loading once data is fetched
             }
         };
-        fetchSubmissions();
-    }, [unique_name]);
+        if (showSubmissions) {
+            fetchSubmissions();
+        }
+    }, [unique_name, showSubmissions]); // Fetch only when dropdown is clicked (showSubmissions is true)
 
     const handleDownloadAllFiles = async (files) => {
         const zip = new JSZip();
@@ -73,15 +70,16 @@ const SubmissionsRevieweeComponent = ({ unique_name }) => {
                 {showSubmissions ? <FaChevronUp className="ml-2 text-xl" /> : <FaChevronDown className="ml-2 text-xl" />}
                 <h1 className="text-3xl font-bold mt-8 mb-4 text-black">My Submissions:</h1>
             </div>
-            {showSubmissions && (
-                submissions.length === 0 ? (
-                    <p className="text-center text-lg text-gray-600">No submissions found for this assignment.</p>
-                ) : (
-                    <ul className="list-disc list-inside space-y-4 mt-4">
-                        {submissions.map((submission) => {
-                            console.log('Processing submission:', submission); // Log submission details for debugging
 
-                            return (
+            {showSubmissions && (
+                loading ? (
+                    <p className="text-center text-lg text-gray-600">Loading submissions...</p>
+                ) : (
+                    Array.isArray(submissions) && submissions.length === 0 ? (
+                        <p className="text-center text-lg text-gray-600">No submissions found for this assignment.</p>
+                    ) : (
+                        <ul className="list-disc list-inside space-y-4 mt-4">
+                            {submissions.map((submission) => (
                                 <li key={submission.unique_submission_name} className="p-4 bg-white shadow-md rounded-lg transition duration-200 hover:shadow-lg">
                                     <h1 className="font-semibold text-lg text-black">Submitted by: {submission.user}</h1>
                                     <p className="text-gray-700 mt-2">Description: {submission.description}</p>
@@ -89,11 +87,10 @@ const SubmissionsRevieweeComponent = ({ unique_name }) => {
                                     <p className="text-gray-700 mt-2">Submitted on: {new Date(submission.time_submitted).toLocaleString()}</p>
                                     <p className="text-gray-700 mt-2">Unique name: {submission.unique_submission_name}</p>
                                     <p className="text-gray-700 mt-2 font-semibold">Status: {submission.status}</p>
-                                    
                                 </li>
-                            );
-                        })}
-                    </ul>
+                            ))}
+                        </ul>
+                    )
                 )
             )}
         </div>

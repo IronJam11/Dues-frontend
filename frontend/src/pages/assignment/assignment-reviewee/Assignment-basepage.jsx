@@ -29,6 +29,7 @@ const AssignmentBasePage = () => {
             } else {
                 setIsReviewer(false);
             }
+            console.log("The user is a reviewer ?", isReviewer);
         } catch (err) {
             setError('Error checking permission.');
             console.error(err);
@@ -50,44 +51,52 @@ const AssignmentBasePage = () => {
     };
 
     if (loading) {
-        return <div>Loading...</div>;  
+        return <div className="flex justify-center items-center h-screen">Loading...</div>;
     }
 
     if (error) {
-        return <div>{error}</div>;  
+        return <div className="text-red-500 text-center py-4">{error}</div>;
     }
 
     return (
         <div className="min-h-screen bg-gray-100">
             <Navbar />
-            <div className="container mx-auto px-4 py-6">
-                <div className="flex justify-between items-center mb-4">
+            <div className="container mx-auto px-6 py-8">
+                <div className="flex justify-between items-center mb-8">
                     <button
                         onClick={handleBackToAssignments}
-                        className="bg-blue-200 text-white py-2 px-4 rounded hover:bg-lightblue-300"
+                        className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition-colors duration-200"
                     >
                         Back to Assignments
                     </button>
                     <button
                         onClick={handleAddSubtask}
-                        className="bg-green-200 text-black py-2 px-4 rounded hover:bg-green-300"
+                        className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 transition-colors duration-200"
                     >
                         Add Subtasks
                     </button>
                 </div>
 
                 {/* Subtasks Section */}
-                <SubtasksComponent unique_name={unique_name} />
+                <div className="bg-white shadow-md rounded-lg p-6 mb-6">
+                    <SubtasksComponent unique_name={unique_name} />
+                </div>
 
                 {/* Conditionally Render Submissions Component based on permission */}
-                {isReviewer ? (
-                    <SubmissionsReviewerComponent unique_name={unique_name} />
-                ) : (
-                    <SubmissionsRevieweeComponent unique_name={unique_name} />
-                )}
+                <div className="bg-white shadow-md rounded-lg p-6 mb-6">
+                    {isReviewer ? (
+                        <SubmissionsReviewerComponent unique_name={unique_name} />
+                    ) : (
+                        <SubmissionsRevieweeComponent unique_name={unique_name} />
+                    )}
+                </div>
 
                 {/* Conditionally Render Iterations Component for Reviewee */}
-                {!isReviewer && <IterationsComponent unique_name={unique_name} />}
+                {!isReviewer && (
+                    <div className="bg-white shadow-md rounded-lg p-6">
+                        <IterationsComponent unique_name={unique_name} />
+                    </div>
+                )}
             </div>
         </div>
     );
