@@ -1,4 +1,3 @@
-// AssignmentPage.js
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -6,15 +5,37 @@ import Navbar from '../../utilities/Navbar-main';
 import { useAuth } from '../hooks/useAuth';
 import Cookies from 'js-cookie';
 import AssignmentsToReview from './assignments-components/AssignemtsToReview';
-import AssignmentsToSubmit from './assignments-components/AssignmentsToSubmitcomponent';// Import AssignmentsToSubmit
+import AssignmentsToSubmit from './assignments-components/AssignmentsToSubmitcomponent'; // Import AssignmentsToSubmit
 import SubmittedAssignments from './assignments-components/submittedAssignmentsComponent'; // Import SubmittedAssignments
 
 function AssignmentPage() {
   const [assignmentsToReview, setAssignmentsToReview] = useState([]);
   const [assignmentsToSubmit, setAssignmentsToSubmit] = useState([]);
   const [submittedAssignments, setSubmittedAssignments] = useState([]); // State for submitted assignments
+  const [isReviewer, setIsReviewer] = useState(false); // State to track if the user is a reviewer
   const navigate = useNavigate();
   const isAuthenticated = useAuth();
+
+  // Fetch if the user is a reviewer
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      try {
+        const token = Cookies.get('accessToken');
+        const res = await axios.get('http://127.0.0.1:8000/users/user-data/', {
+          withCredentials: true,
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        console.log("isadmin:- ", res.data);
+        setIsReviewer(res.data['is_reviewer']); // Set the isReviewer flag based on response
+      } catch (err) {
+        console.error('Error fetching user details:', err.message);
+      }
+    };
+
+    fetchUserDetails();
+  }, []);
 
   // Fetch assignments to review
   useEffect(() => {
@@ -111,6 +132,14 @@ function AssignmentPage() {
     <div className="min-h-screen">
       <Navbar />
       <div className="container mx-auto py-10">
+        {isReviewer && (
+          <button
+            onClick={() => navigate('/assignments/new')}
+            className="bg-blue-500 text-white px-4 py-2 rounded absolute right-10 top-23"
+          >
+            Add Assignment
+          </button>
+        )}
         <AssignmentsToSubmit
           assignmentsToSubmit={assignmentsToSubmit}
           handleViewAssignment={handleViewAssignment}

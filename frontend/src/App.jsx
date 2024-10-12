@@ -25,6 +25,7 @@ import CookiesPage from './pages/debug/CookiePage';
 import UserDetailsPage from './pages/auth/UserDetailsSetupPage';
 import CookieExample from './pages/debug/SampleCookiepage';
 import  LoadingPage  from './functions/handleLoginWithChanneli';
+import UserDetailPage from './pages/user_profiles/UserProfile';
 
 function App() {
   return (
@@ -50,9 +51,15 @@ function App() {
       
       {/* about the user  */}
       <Route path="/user-profiles" element = {<UserProfilesPage/>} />
+      <Route path="/user-profiles/:enrollmentNo" element = {<UserDetailPage/>} />
       <Route path="/edit-profile" element = {<EditProfilePage/>} />
       <Route path="/homepage" element={<HomePage />} />
       <Route path="/samplecookie" element = {<CookieExample/>} />
+
+
+      
+  
+
 
       
       {/* projects */}

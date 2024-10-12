@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
-import Cookies from 'js-cookie'
+import Cookies from 'js-cookie';
 import Navbar from '../../utilities/Navbar-main';
+
 function UserDetailsPage() {
   const { enrollmentNo } = useParams();
   const [name, setName] = useState('');
@@ -20,26 +21,31 @@ function UserDetailsPage() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    let isDeveloper = false;
-    if(role == "Developer") isDeveloper = true;
-    const data = {
-        "enrollmentNo":enrollmentNo,
-        "name":name,
-        "year":year,
-        "alias":alias,
-        "isDeveloper":role,
-        "profilePicture":profilePic,
-        "password": "",
-        
+
+    let isDeveloper = role === 'developer';
+
+    // Create FormData instance
+    const formData = new FormData();
+    formData.append('enrollmentNo', enrollmentNo);
+    formData.append('name', name);
+    formData.append('year', year);
+    formData.append('alias', alias);
+    formData.append('isDeveloper', isDeveloper);
+    if (profilePic) {
+      formData.append('profilePicture', profilePic); // Append the profile picture
     }
-    console.log(data);
 
     try {
-      const response = await axios.post('http://127.0.0.1:8000/users/set-user-details/', data, {
-        headers: {
-          Authorization: `bearer ${Cookies.get('accessToken')}`
-        },
-      });
+      const response = await axios.post(
+        'http://127.0.0.1:8000/users/set-user-details/',
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${Cookies.get('accessToken')}`,
+            'Content-Type': 'multipart/form-data', // Ensure correct content type for file upload
+          },
+        }
+      );
 
       console.log('User Registered Successfully:', response.data);
       navigate('/homepage'); // Redirect to homepage after registration
