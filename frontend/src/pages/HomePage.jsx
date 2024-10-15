@@ -3,7 +3,6 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../utilities/Navbar-main';
 import Cookies from 'js-cookie';
-import { useAuth } from './hooks/useAuth';
 
 function Homepage() {
   const [user, setUser] = useState(null);
@@ -11,7 +10,6 @@ function Homepage() {
   const [loading, setLoading] = useState(true); // Track loading state
   const [tokensFetched, setTokensFetched] = useState(false); // Track token fetch completion
   const navigate = useNavigate();
-  const isAuthenticated = true; // Assume authentication state
   const query = new URLSearchParams(window.location.search);
   const code = query.get('code');
   const state = query.get('state');
@@ -34,7 +32,7 @@ function Homepage() {
         Cookies.remove('accessToken');
         Cookies.remove('refreshToken');
  
-         // Set the access token and refresh token in cookies
+        // Set the access token and refresh token in cookies
         Cookies.set('accessToken', response.data.accessToken, { expires: 7 });
         Cookies.set('refreshToken', response.data.refreshToken, { expires: 7 });
 
@@ -54,13 +52,20 @@ function Homepage() {
       try {
         const token = Cookies.get('accessToken'); // Read token from cookies
         if (token) {
-          // Fetch user details from the API
-          const response = await axios.get('http://127.0.0.1:8000/users/user-data/', {
+          // Fetch user details from the new API endpoint
+          const checkResponse = await axios.get('http://127.0.0.1:8000/tags/check-user-tags/', {
             headers: {
               Authorization: `Bearer ${token}`, // Send token as a header
             },
             withCredentials: true,
           });
+          const response = await axios.get('http://127.0.0.1:8000/tags/user-details-tags/', {
+            headers: {
+              Authorization: `Bearer ${token}`, // Send token as a header
+            },
+            withCredentials: true,
+          });
+          console.log(checkResponse.data);
           setUser(response.data);
         } else {
           setError('Token not found');
@@ -91,11 +96,7 @@ function Homepage() {
     handleTokenSetting(); // Always call this first to handle the flow
   }, [code, state]);
 
-  const handleChatClick = () => {
-    if (user && user.enrollmentNo) {
-      navigate(`/${user.enrollmentNo}/${user.enrollmentNo}`);
-    }
-  };
+ 
 
   const handleEditClick = () => {
     navigate(`/edit-profile`);
@@ -109,7 +110,7 @@ function Homepage() {
     return <div>Error: {error}</div>; // Show error message
   }
 
-  return tokensFetched && isAuthenticated && user ? (
+  return tokensFetched && user ? (
     <>
       <Navbar />
       <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100 pt-10">
@@ -123,13 +124,20 @@ function Homepage() {
           <h2 className="text-2xl font-bold text-black mb-2">{user.name}</h2>
           <p className="text-black mb-4">@{user.alias}</p>
           <p className="text-black mb-6">{user.isDeveloper ? 'Developer' : 'Designer'}</p>
+          <p className="text-black mb-6">Points: {user.points}</p> {/* Display user points */}
+          <p className="text-black mb-6">Streak: {user.streak ? user.streak : 1}</p> {/* Display user points */}
+          <div className="flex flex-wrap justify-center mb-4">
+            {user.tags.map((tag, index) => (
+              <div
+                key={index}
+                className="flex items-center justify-center m-2 p-2 rounded-lg"
+                style={{ backgroundColor: tag.color }}
+              >
+                <span className="text-white">{tag.name}</span> {/* Display tag name */}
+              </div>
+            ))}
+          </div>
           <div className="flex justify-center space-x-4">
-            <button
-              onClick={handleChatClick}
-              className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-full hover:bg-blue-700 transition duration-300"
-            >
-              Chat with this user
-            </button>
             <button
               onClick={handleEditClick}
               className="px-4 py-2 bg-green-600 text-white font-semibold rounded-full hover:bg-green-700 transition duration-300"

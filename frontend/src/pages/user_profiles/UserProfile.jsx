@@ -18,7 +18,8 @@ function UserDetailPage() {
           ...response.data,
           originalIsAdmin: response.data.is_admin,
           originalIsReviewer: response.data.is_reviewer,
-        })
+        });
+        console.log(response.data);
       } catch (err) {
         setError('Error fetching user details.');
         console.error(err.message);
@@ -53,6 +54,7 @@ function UserDetailPage() {
 
   // Submit all changes (admin/reviewer toggles)
   const handleSubmit = async () => {
+    console.log(userDetails);
     try {
       const updatedUser = {
         ...userDetails,
@@ -60,13 +62,18 @@ function UserDetailPage() {
         is_reviewer: userDetails.is_reviewer,
       };
 
-      await axios.post(`http://127.0.0.1:8000/users/${enrollmentNo}/update/`, updatedUser);
+      await axios.post(`http://127.0.0.1:8000/users/change-user-info-admin/${enrollmentNo}/`, updatedUser);
       alert('User details updated successfully.');
-      navigate('/users'); // Redirect after successful submission
+      // navigate('/users'); // Redirect after successful submission
     } catch (err) {
       setError('Error updating user details.');
       console.error(err.message);
     }
+  };
+
+  // Go Back Button
+  const handleGoBack = () => {
+    navigate(-1); // Go back to the previous page
   };
 
   if (error) {
@@ -122,6 +129,11 @@ function UserDetailPage() {
 
             <button onClick={handleBan} className="bg-yellow-500 text-white px-4 py-2 rounded">
               Ban User
+            </button>
+
+            {/* Go Back Button */}
+            <button onClick={handleGoBack} className="bg-gray-500 text-white px-4 py-2 rounded">
+              Go Back
             </button>
           </div>
         </div>

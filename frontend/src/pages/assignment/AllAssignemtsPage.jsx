@@ -118,7 +118,7 @@ function AssignmentPage() {
   };
 
   const handleViewAssignmentReviewer = (unique_name) => {
-    navigate(`${unique_name}/reviewer/`);
+    navigate(`${unique_name}/`);
   };
 
   const formatDate = (dateString) => {
@@ -140,11 +140,6 @@ function AssignmentPage() {
             Add Assignment
           </button>
         )}
-        <AssignmentsToSubmit
-          assignmentsToSubmit={assignmentsToSubmit}
-          handleViewAssignment={handleViewAssignment}
-          formatDate={formatDate}
-        />
         <AssignmentsToReview
           assignmentsToReview={assignmentsToReview}
           handleEditAssignment={handleEditAssignment}
@@ -153,6 +148,12 @@ function AssignmentPage() {
           handleDeleteAssignment={handleDeleteAssignment}
           formatDate={formatDate}
         />
+        <AssignmentsToSubmit
+          assignmentsToSubmit={assignmentsToSubmit}
+          handleViewAssignment={handleViewAssignment}
+          formatDate={formatDate}
+        />
+        
         <SubmittedAssignments
           submittedAssignments={submittedAssignments}
           handleViewAssignment={handleViewAssignment}

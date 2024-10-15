@@ -10,6 +10,7 @@ export const fetchUserDetails = async (setUser) => {
       },
       withCredentials: true,  // Keep this if you're still sending CSRF or session cookies
     });
+    console.log("User details:",response.data)
 
     setUser(response.data);
     console.log("User data from the top: ", response.data);
