@@ -1,6 +1,10 @@
 import React, { Suspense, lazy } from 'react';
 import {BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Leaderboard from './pages/leaderboard/Leaderboard';
+import ProjectDetail from './pages/projects/Project-info';
+import ProjectAssignmentsPage from './pages/projects/assignments/ProjectAssignments';
+import IdeasList from './pages/ideabank/AllIdeasPage';
+import IdeaSubmissionForm from './pages/ideabank/CreateNewIdea';
 
 // Lazy loading components
 const HomePage = lazy(() => import('./pages/HomePage'));
@@ -65,9 +69,19 @@ function App() {
         <Route path="/projects" element={<UserProjects />} />
         <Route path="projects/project-chat/:enrollmentNo/:room" element={<GroupChatPage />} />
         <Route path="projects/project-chat/:enrollmentNo/:room/add-users" element={<AddUsersPage />} />
+        <Route path="projects/project-info/:roomname" element={<ProjectDetail/>} />
+        <Route path="projects/assignments/:roomname" element={<ProjectAssignmentsPage/>} />
+        <Route path="projects/assignments/:roomname" element={<ProjectAssignmentsPage/>} />
+
 
         {/* Leaderboard */}
         <Route path="/leaderboard" element={<Leaderboard/>} />
+
+
+        {/* Ideas */}
+        <Route path="/ideas" element={<IdeasList/>} />
+        <Route path="/ideas/create-new-idea" element={<IdeaSubmissionForm/>} />
+
 
       </Routes>
 

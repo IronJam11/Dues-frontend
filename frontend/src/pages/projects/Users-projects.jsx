@@ -14,10 +14,6 @@ function UserProjects() {
 
   useEffect(() => {
     // Fetch the user's projects
-    
-    console.log("hello");
-
-    
     const fetchProjects = async () => {
       try {
         const token = Cookies.get('accessToken');
@@ -48,7 +44,7 @@ function UserProjects() {
       try {
         const response = await axios.delete(`http://127.0.0.1:8000/projects/delete/${roomname}/`, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('jwtToken')}`
+            Authorization: `Bearer ${Cookies.get('accessToken')}`
           }
         });
 
@@ -65,32 +61,32 @@ function UserProjects() {
 
   // Handle navigation to group chat
   const handleGroupChat = async (roomname) => {
-    try{
+    try {
       const token = Cookies.get('accessToken');
       const response = await axios.get("http://127.0.0.1:8000/users/user-data/", 
         {
-          withCredentials : true,
+          withCredentials: true,
           headers: {
             Authorization: `Bearer ${token}`,
           }
         }
       );
-      const enrollmentNo = response.data.enrollmentNo
-      console.log(enrollmentNo);
+      const enrollmentNo = response.data.enrollmentNo;
       navigate(`project-chat/${enrollmentNo}/${roomname}`);
 
-    }
-    catch(error)
-    {
+    } catch (error) {
       console.error(error);
-
     }
-     // Navigate to group chat page with the roomname
   };
 
   // Handle navigation to assignments
   const handleAssignments = (roomname) => {
-    navigate(`/assignments/${roomname}`); // Navigate to assignments page with the roomname
+    navigate(`assignments/${roomname}`); // Navigate to assignments page with the roomname
+  };
+
+  // Handle navigation to project details
+  const handleViewProject = (roomname) => {
+    navigate(`project-info/${roomname}`); // Navigate to the project details page
   };
 
   return (
@@ -127,6 +123,13 @@ function UserProjects() {
                   <p className="text-sm text-gray-600">Deadline: {new Date(project.deadline).toLocaleString()}</p>
                   <p className="text-sm text-gray-600">Room Name: {project.roomname}</p>
                   <div className="flex justify-between items-center mt-4">
+                    {/* View button */}
+                    <button
+                      onClick={() => handleViewProject(project.roomname)}
+                      className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all duration-300"
+                    >
+                      View
+                    </button>
                     {/* Delete button */}
                     <button
                       onClick={() => handleDeleteProject(project.roomname)}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Navbar from '../../utilities/Navbar-main';
+import Cookies from 'js-cookie'
 
 function CreateProject() {
   const [name, setName] = useState('');
@@ -35,77 +36,57 @@ function CreateProject() {
     );
   };
 
-  // Convert the image to base64 (optional if your backend accepts base64 images)
-  const getBase64 = (file) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = (error) => reject(error);
-    });
-  };
-
-  // Handle form submission using JSON
+  // Handle form submission using FormData
   const handleSubmit = async () => {
-    let groupImageBase64 = null;
+    const formData = new FormData(); // Create FormData instance
+
+    // Append form fields to FormData
+    formData.append('name', name);
+    formData.append('description', description);
+    formData.append('deadline', deadline);
+    formData.append('participant_emails', selectedParticipants);
     
     if (groupImage) {
-      groupImageBase64 = await getBase64(groupImage); // Convert image to base64
+      formData.append('group_image', groupImage); // Append the image file
     }
 
-    // Prepare JSON data
-    const projectData = {
-      name,
-      description,
-      deadline,
-      participant_emails: selectedParticipants,
-      group_image: groupImageBase64, // Include the base64 string (if needed)
-    };
-    console.log(projectData);
-
     try {
-      const response = await axios.post('http://127.0.0.1:8000/projects/new-project/', projectData, {
+      const response = await axios.post('http://127.0.0.1:8000/projects/new-project/', formData, {
         headers: {
-          'Content-Type': 'application/json', // Sending data as JSON
-          Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
+          'Content-Type': 'multipart/form-data', // Set to multipart/form-data
+          Authorization: `Bearer ${Cookies.get('accessToken')}`,
         },
       });
 
-      if (response.status === 201 || 200) 
-        {
+      if (response.status === 201 || 200) {
         alert('Project created successfully!');
         const roomname = response.data.roomname;
         
-        const roomdata = 
-        {
-            "room_name": projectData.name,
-            "participant_emails": selectedParticipants,
-            "type": "Group Chat",
-            "late_joiner_emails": [],
-            "slug": roomname,
-        }
-        console.log(roomdata);
+        const roomdata = {
+          "room_name": name,
+          "participant_emails": selectedParticipants,
+          "type": "Group Chat",
+          "late_joiner_emails": [],
+          "slug": roomname,
+        };
+
         try {
-            const responsdata = await axios.post('http://127.0.0.1:8000/chats/groupchat/newproject/room/',roomdata, {
-              withCredentials: true,
-              headers: {
-                'Content-Type': 'application/json', // Sending data as JSON
-                Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
-              },
-            });
+          const responsdata = await axios.post('http://127.0.0.1:8000/chats/groupchat/newproject/room/', roomdata, {
+            withCredentials: true,
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${Cookies.get('accessToken')}`,
+            },
+          });
           console.log(responsdata.data);
+        } catch (error) {
+          console.error('Error creating the room:', error);
         }
-        catch(error)
-        {
-            console.error('Error creating the room',error);
-        }
-    }
+      }
     } catch (error) {
       console.error('Error creating project:', error);
     }
-
   };
-
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
