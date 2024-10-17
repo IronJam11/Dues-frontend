@@ -14,7 +14,7 @@ const UserList = ({ users }) => {
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 w-full max-w-5xl mt-6">
       {users.map((user) => (
         <div key={user.enrollmentNo} className="bg-white p-6 rounded-lg shadow-lg text-center">
-          <div className={`relative inline-block ${user.status === 'online' ? 'border-4 border-green-500' : ''} rounded-full p-1`}>
+          <div className={`relative inline-block ${user.status === 'Online' ? 'border-4 border-green-500' : ''} rounded-full p-1`}>
             <img
               src={`http://127.0.0.1:8000${user.profilePicture}`}
               alt={`${user.name}'s profile`}

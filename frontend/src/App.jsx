@@ -6,6 +6,7 @@ import ProjectAssignmentsPage from './pages/projects/assignments/ProjectAssignme
 import IdeasList from './pages/ideabank/AllIdeasPage';
 import IdeaSubmissionForm from './pages/ideabank/CreateNewIdea';
 import UserActivityStatus from './pages/debug/ActivityPage';
+import EditAssignment from './pages/assignment/edit/EditAssignmentPage';
 
 // Lazy loading components
 const HomePage = lazy(() => import('./pages/HomePage'));
@@ -47,10 +48,12 @@ function App() {
 
         {/* Assignments */}
         <Route path="/:enrollmentNo/:userEnrollmentNo" element={<ChatPage />} />
-        <Route path="/assignments" element={<AssignmentPage />} />
+        <Route path="assignments/:unique_name" element={<AssignmentBasePage />} />
         <Route path="/createAssignment" element={<UploadAssignment />} />
         <Route path="assignments/:unique_name/new-subtask" element={<CreateSubtask />} />
-        <Route path="assignments/:unique_name" element={<AssignmentBasePage />} />
+        <Route path="assignments/:unique_name/edit-assignment" element={<EditAssignment />} />
+        <Route path="/assignments" element={<AssignmentPage />} />
+        <Route path="/assignments/new" element={<UploadAssignment />} />
         <Route path="/submit-assignment/:unique_name" element={<AssignmentSubmissionPage />} />
         <Route path="/submission/review/:unique_submission_name" element={<ReviewSubmissionPage />} />
         

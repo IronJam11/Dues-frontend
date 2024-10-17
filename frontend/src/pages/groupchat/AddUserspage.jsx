@@ -2,15 +2,22 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from '../../utilities/Navbar-main';
+import { useAuth } from '../hooks/useAuth';
 
 function AddUsersPage() {
   const { room } = useParams();
   const [users, setUsers] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
   const navigate = useNavigate();
+  const isAuthenticated = useAuth()
 
   useEffect(() => {
     // Fetch all users who are not yet in the group
+    if(!isAuthenticated)
+    {
+      navigate("/loginpage")
+      return;
+    }
     const fetchUsers = async () => {
         try {
             const response = await axios.get('http://127.0.0.1:8000/users/all-users-details/', {
@@ -57,7 +64,7 @@ function AddUsersPage() {
     }
   };
 
-  return (
+  return isAuthenticated && (
     <div className="min-h-screen">
       {/* Include the Navbar at the top */}
       <Navbar />

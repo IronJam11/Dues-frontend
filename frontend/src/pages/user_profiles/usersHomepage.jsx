@@ -88,6 +88,7 @@ function UserProfilesPage() {
     
         ws.current.onclose = (event) => {
           console.log('WebSocket connection closed', event);
+          
         };
     
       } catch (err) {

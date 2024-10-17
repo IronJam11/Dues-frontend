@@ -110,6 +110,7 @@ function AssignmentPage() {
   };
 
   const handleEditAssignment = (unique_name) => {
+    navigate(`${unique_name}/edit-assignment`)
     console.log(`Edit assignment with ID: ${unique_name}`);
   };
 

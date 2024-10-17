@@ -4,6 +4,7 @@ import axios from 'axios';
 import Navbar from '../../utilities/Navbar-main';
 import { FaCoins } from 'react-icons/fa';
 import Cookies from 'js-cookie'
+import { useAuth } from '../hooks/useAuth';
 
 function GroupChatPage() {
   const { enrollmentNo, room } = useParams();
@@ -19,6 +20,8 @@ function GroupChatPage() {
   const socketRef = useRef(null);
   const initializedRef = useRef(false);
   const [isAdmin, setIsAdmin] = useState("false");
+  const isAuthenticated = useAuth();
+
 
 
   // Fetch room details including participants and admins
@@ -183,7 +186,7 @@ function GroupChatPage() {
     }
   }, []);
 
-  return (
+  return isAuthenticated && (
     <>
     <Navbar />
     <div className="min-h-screen flex flex-col lg:flex-row">
