@@ -111,6 +111,9 @@ function Navbar() {
         <Link to="/tags" className="hover:bg-gray-700 text-white px-4 py-2 rounded">
           Tags
         </Link>
+        <Link to="/ideas" className="hover:bg-gray-700 text-white px-4 py-2 rounded">
+          Ideas
+        </Link>
       </div>
 
       {/* Profile Section */}

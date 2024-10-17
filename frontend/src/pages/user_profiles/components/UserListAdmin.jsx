@@ -27,6 +27,7 @@ const UserListAdmin= ({ users}) => {
           <h2 className="text-2xl font-bold text-black mb-2">{user.name}</h2>
           <p className="text-black mb-4">@{user.alias}</p>
           <p className="text-black mb-6">{user.isDeveloper ? 'Developer' : 'Designer'}</p>
+          <p className="text-black mb-6">{user.status}</p>
           <button
             onClick={() => handleChatClick(user.enrollmentNo)}
             className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-full hover:bg-blue-700 transition duration-300"

@@ -5,6 +5,7 @@ import ProjectDetail from './pages/projects/Project-info';
 import ProjectAssignmentsPage from './pages/projects/assignments/ProjectAssignments';
 import IdeasList from './pages/ideabank/AllIdeasPage';
 import IdeaSubmissionForm from './pages/ideabank/CreateNewIdea';
+import UserActivityStatus from './pages/debug/ActivityPage';
 
 // Lazy loading components
 const HomePage = lazy(() => import('./pages/HomePage'));
@@ -81,6 +82,9 @@ function App() {
         {/* Ideas */}
         <Route path="/ideas" element={<IdeasList/>} />
         <Route path="/ideas/create-new-idea" element={<IdeaSubmissionForm/>} />
+
+        {/* Debug */}
+        <Route path="/activity" element={<UserActivityStatus/>} />
 
 
       </Routes>
