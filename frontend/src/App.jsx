@@ -7,6 +7,7 @@ import IdeasList from './pages/ideabank/AllIdeasPage';
 import IdeaSubmissionForm from './pages/ideabank/CreateNewIdea';
 import UserActivityStatus from './pages/debug/ActivityPage';
 import EditAssignment from './pages/assignment/edit/EditAssignmentPage';
+import WebSocketStatus from './utilities/UserActivitystatus';
 
 // Lazy loading components
 const HomePage = lazy(() => import('./pages/HomePage'));
@@ -34,6 +35,7 @@ const CreateTag = lazy(() => import('./pages/tags/AddTag'));
 const TagList = lazy(() => import('./pages/tags/AllTags'));
 
 function App() {
+  
   return (
     
     <Suspense fallback={<div>Loading...</div>}>
@@ -77,6 +79,11 @@ function App() {
         <Route path="projects/assignments/:roomname" element={<ProjectAssignmentsPage/>} />
         <Route path="projects/assignments/:roomname" element={<ProjectAssignmentsPage/>} />
 
+        {/* Debugging */}
+
+        <Route path="/user-activtiy" element={<UserActivityStatus/>} />
+
+
 
         {/* Leaderboard */}
         <Route path="/leaderboard" element={<Leaderboard/>} />
@@ -93,6 +100,7 @@ function App() {
       </Routes>
 
     </Suspense>
+    
   );
 }
 

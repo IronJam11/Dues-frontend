@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../hooks/useAuth';
+import { useWebSocket } from '../../contexts/WebSocketContext'; // Import the useWebSocket hook
 import Navbar from '../../utilities/Navbar-main';
 import SearchBar from '../../utilities/search-bar'; // Import the SearchBar component
 import UserList from './components/UserList'; // Import the UserList component
@@ -8,11 +9,10 @@ import UserListAdmin from './components/UserListAdmin'; // Import the UserListAd
 import Cookies from 'js-cookie';
 
 function UserProfilesPage() {
-  const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]); // To handle search results
   const [userDetails, setUserDetails] = useState(false); // State to track if the user is an admin
   const isAuthenticated = useAuth(); // Check authentication status
-  const ws = useRef(null); // Reference to the WebSocket instance
+  const { allUsers } = useWebSocket(); // Get allUsers from the WebSocket context
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -28,98 +28,22 @@ function UserProfilesPage() {
             'Authorization': `Bearer ${token}`,
           },
         });
-        console.log("isadmin:- ", res.data);
-        setUserDetails(res.data); // Set the isReviewer flag based on response
-
-        // Establish WebSocket connection using enrollmentNo from userDetails
-        const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-        const socketUrl = `${protocol}://${window.location.hostname}:8000/status/ws/status/${res.data.enrollmentNo}/`;
-        ws.current = new WebSocket(socketUrl);
-
-        ws.current.onopen = () =>
-        {
-          console.log("Websocket opened!!")
-        }
-
-        
-        // Listen for messages from the WebSocket
-        ws.current.onmessage = (event) => {
-          const data = JSON.parse(event.data);
-          console.log(`${data.enrollmentNo}'s status changes to ${data.status}`)
-          console.log(`${userDetails.enrollmentNo} is online too`)
-          setUsers((prevUsers) =>
-            prevUsers.map((user) =>
-              user.enrollmentNo === res.data.enrollmentNo
-                ? { ...user, status: "Online" }
-                : user
-            )
-          );
-          setFilteredUsers((prevUsers) =>
-            prevUsers.map((user) =>
-              user.enrollmentNo === res.data.enrollmentNo
-                ? { ...user, status: "Online" }
-                : user
-            )
-          );
-        
-          if (data.type === 'status_update') {
-            // Update user status directly in the list based on enrollmentNo
-            setUsers((prevUsers) =>
-              prevUsers.map((user) =>
-                user.enrollmentNo === data.enrollmentNo
-                  ? { ...user, status: data.status }
-                  : user
-              )
-            );
-            setFilteredUsers((prevUsers) =>
-              prevUsers.map((user) =>
-                user.enrollmentNo === data.enrollmentNo
-                  ? { ...user, status: data.status }
-                  : user
-              )
-            );
-          }
-        };
-        
-        
-        ws.current.onerror = (error) => {
-          console.error('WebSocket error:', error);
-        };
-    
-        ws.current.onclose = (event) => {
-          console.log('WebSocket connection closed', event);
-          
-        };
-    
+        setUserDetails(res.data); // Set user details (admin status)
       } catch (err) {
         console.error('Error fetching user details:', err.message);
       }
     };
 
-    // Fetch user profiles and admin status from the API when the component mounts
-    const fetchUsers = async () => {
-      try {
-        const response = await axios.get('http://127.0.0.1:8000/users/all-users-details/');
-        setUsers(response.data.users);
-        setFilteredUsers(response.data.users); // Initialize filtered users with all users
-      } catch (error) {
-        console.error('Error fetching user profiles:', error);
-      }
-    };
-
     fetchUserDetails();
-    fetchUsers();
-
-    return () => {
-      // Cleanup WebSocket on unmount
-      if (ws.current) {
-        ws.current.close();
-      }
-    };
   }, [isAuthenticated]);
 
+  useEffect(() => {
+    // Set filteredUsers to all users initially when WebSocket provides the data
+    setFilteredUsers(allUsers);
+  }, [allUsers]);
+
   const handleSearch = (query) => {
-    const searchResults = users.filter((user) =>
+    const searchResults = allUsers.filter((user) =>
       user.enrollmentNo.toLowerCase().includes(query.toLowerCase()) ||
       user.name.toLowerCase().includes(query.toLowerCase()) ||
       user.alias.toLowerCase().includes(query.toLowerCase())
