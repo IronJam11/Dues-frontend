@@ -3,6 +3,15 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../utilities/Navbar-main';
+import { Chart } from 'chart.js/auto';
+import { Bar } from 'react-chartjs-2';
+import { CategoryScale } from 'chart.js';
+
+import { registerables } from 'chart.js';
+
+Chart.register(...registerables);
+
+Chart.register(CategoryScale);
 
 const IdeasList = () => {
   const [ideas, setIdeas] = useState([]);
@@ -49,23 +58,23 @@ const IdeasList = () => {
         console.error("Error fetching user votes:", error);
       }
     };
-    const fetchUserDetails = async () => {
-        try{
-            const response = await axios.get('http://127.0.0.1:8000/users/user-data/',
-                {
-                    withCredentials: true,
-                    headers: {
-                        Authorization: `Bearer ${Cookies.get('accessToken')}`
-                    }
-                }
-            )
-            setUserDetails(response.data);
-            console.log("response",response.data);
-        } catch(error)
-        {
-            console.error("Error:- ", error);
-        }
 
+    const fetchUserDetails = async () => {
+      try{
+        const response = await axios.get('http://127.0.0.1:8000/users/user-data/',
+            {
+                withCredentials: true,
+                headers: {
+                    Authorization: `Bearer ${Cookies.get('accessToken')}`
+                }
+            }
+        )
+        setUserDetails(response.data);
+        console.log("response",response.data);
+      } catch(error)
+      {
+        console.error("Error:- ", error);
+      }
     }
 
     const initializeData = async () => {
@@ -86,24 +95,24 @@ const IdeasList = () => {
     };
 
     websocketRef.current.onmessage = (event) => {
-        const data = JSON.parse(event.data);
+      const data = JSON.parse(event.data);
       
-        if (data.type === 'vote_update') {
-          // Update the idea that has the matching unique_name with the new vote counts
-          setIdeas((prevIdeas) =>
-            prevIdeas.map((idea) => {
-              if (idea.unique_name === data.unique_name) {
-                return {
-                  ...idea,
-                  for_votes: data.for_votes,
-                  against_votes: data.against_votes,
-                };
-              }
-              return idea;
-            })
-          );
-        }
-      };
+      if (data.type === 'vote_update') {
+        // Update the idea that has the matching unique_name with the new vote counts
+        setIdeas((prevIdeas) =>
+          prevIdeas.map((idea) => {
+            if (idea.unique_name === data.unique_name) {
+              return {
+                ...idea,
+                for_votes: data.for_votes,
+                against_votes: data.against_votes,
+              };
+            }
+            return idea;
+          })
+        );
+      }
+    };
 
     websocketRef.current.onerror = (error) => {
       console.error('WebSocket error:', error);
@@ -204,9 +213,41 @@ const IdeasList = () => {
               <div key={idea.unique_name} className="bg-white shadow-md rounded-lg p-6 mb-6">
                 <h2 className="text-2xl font-semibold">{idea.title}</h2>
                 <p className="mt-2">{idea.description}</p>
-                <p className="mt-2 text-gray-600">
-                  <strong>Votes:</strong> {idea.for_votes} for / {idea.against_votes} against
-                </p>
+
+                {/* Bar plot for votes */}
+                <div className="mt-4">
+                  <Bar
+                    data={{
+                      labels: ['For', 'Against'],
+                      datasets: [{
+                        label: 'Votes',
+                        data: [idea.for_votes, idea.against_votes],
+                        backgroundColor: [
+                          'rgba(0, 255, 0, 0.2)',
+                          'rgba(255, 0, 0, 0.2)',
+                        ],
+                        borderColor: [
+                          'rgba(0, 255, 0, 1)',
+                          'rgba(255, 0, 0, 1)',
+                        ],
+                        borderWidth: 1
+                      }]
+                    }}
+                    options={{
+                      title: {
+                        display: true,
+                        text: 'Votes'
+                      },
+                      scales: {
+                        yAxes: [{
+                          ticks: {
+                            beginAtZero: true
+                          }
+                        }]
+                      }
+                    }}
+                  />
+                </div>
 
                 {/* Voting buttons */}
                 <div className="mt-4">

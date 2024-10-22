@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Navbar from '../../utilities/Navbar-main'; // Import the Navbar component
 import Cookies from 'js-cookie';
+import { Link } from 'react-router-dom'; // Import Link
 
 function Leaderboard() {
   const [users, setUsers] = useState([]);
@@ -59,14 +60,18 @@ function Leaderboard() {
               >
                 <div className="flex items-center space-x-4">
                   {/* User's profile picture */}
+                  <Link to={`/user-profiles/${user.enrollmentNo}`}>
                   <img
                     src={`http://127.0.0.1:8000${user.profilePicture}`}
                     alt={`${user.name}'s profile`}
                     className="w-16 h-16 rounded-full object-cover"
                   />
+                  </Link>
                   <div>
-                    {/* User's name and alias */}
-                    <h2 className="text-xl font-bold text-gray-900">{user.name}</h2>
+                    {/* User's name and alias wrapped in Link */}
+                    <h2 className="text-xl font-bold text-gray-900">
+                      <Link to={`/user-profiles/${user.enrollmentNo}`}>{user.name}</Link> {/* Navigate to user profile */}
+                    </h2>
                     <p className="text-gray-600">@{user.alias}</p>
                   </div>
                 </div>

@@ -2,16 +2,34 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from '../../utilities/Navbar-main'; // Import Navbar
+import Cookies from 'js-cookie';
 
 function UserDetailPage() {
-  const { enrollmentNo } = useParams(); // Get enrollmentNo from the URL
+  const { enrollmentNo } = useParams(); 
   const [userDetails, setUserDetails] = useState(null);
+  const [currentUserDetails, setCurrentUserDetails] = useState(null);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch user details by enrollmentNo
-    const fetchUserDetails = async () => {
+      const fetchCurrentUserDetails = async () => {
+        try {
+          const response = await axios.get(`http://127.0.0.1:8000/users/user-data/`,
+            {
+              withCredentials: true,
+              headers: {
+                'Authorization': `Bearer ${Cookies.get("accessToken")}`
+              }
+            }
+          );
+          setCurrentUserDetails(response.data);
+        } catch (err) {
+          setError('Error fetching user details.');
+          console.error(err.message);
+        }
+      }
+      
+      const fetchUserDetails = async () => {
       try {
         const response = await axios.get(`http://127.0.0.1:8000/users/user-details-enrollmentNo/${enrollmentNo}/`);
         setUserDetails({
@@ -19,13 +37,13 @@ function UserDetailPage() {
           originalIsAdmin: response.data.is_admin,
           originalIsReviewer: response.data.is_reviewer,
         });
-        console.log(response.data);
+        console.log("userdetails:-",response.data);
       } catch (err) {
         setError('Error fetching user details.');
         console.error(err.message);
       }
     };
-
+    fetchCurrentUserDetails();
     fetchUserDetails();
   }, [enrollmentNo]);
 
@@ -35,7 +53,7 @@ function UserDetailPage() {
       await axios.get(`http://127.0.0.1:8000/users/delete/${enrollmentNo}/`);
       console.log("Successfully deleted");
       alert("Deleted");
-      navigate('/homepage');// Redirect after deletion
+      navigate('/homepage'); // Redirect after deletion
     } catch (err) {
       setError('Error deleting user.');
       console.error(err.message);
@@ -64,7 +82,6 @@ function UserDetailPage() {
 
       await axios.post(`http://127.0.0.1:8000/users/change-user-info-admin/${enrollmentNo}/`, updatedUser);
       alert('User details updated successfully.');
-      // navigate('/users'); // Redirect after successful submission
     } catch (err) {
       setError('Error updating user details.');
       console.error(err.message);
@@ -92,50 +109,68 @@ function UserDetailPage() {
         <h1 className="text-4xl font-bold mb-6">User Details</h1>
 
         <div className="bg-white shadow-md rounded p-6">
+          {/* Profile picture */}
+          {userDetails.profilePicture && (
+            <div className="mb-4">
+              <img 
+                 src={`http://127.0.0.1:8000${userDetails.profilePicture}`}
+                alt={`${userDetails.name}'s profile`} 
+                className="w-32 h-32 rounded-full object-cover" 
+              />
+            </div>
+          )}
+
           <p><strong>Enrollment No:</strong> {userDetails.enrollmentNo}</p>
           <p><strong>Name:</strong> {userDetails.name}</p>
           <p><strong>Email:</strong> {userDetails.email}</p>
-          <p><strong>Role:</strong> {userDetails.role}</p>
+          <p><strong>Reviewer:- </strong> {userDetails.is_reviewer}</p>
+          <p><strong>Points:- </strong> {userDetails.points}</p>
 
           {/* Toggling Admin and Reviewer status */}
-          <div className="mt-4">
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                checked={userDetails.is_admin}
-                onChange={() => setUserDetails((prev) => ({ ...prev, is_admin: !prev.is_admin }))}
-              />
-              <span className="ml-2">Admin</span>
-            </label>
-            <label className="flex items-center mt-2">
-              <input
-                type="checkbox"
-                checked={userDetails.is_reviewer}
-                onChange={() => setUserDetails((prev) => ({ ...prev, is_reviewer: !prev.is_reviewer }))}
-              />
-              <span className="ml-2">Reviewer</span>
-            </label>
-          </div>
+          {currentUserDetails?.is_admin && (
+  <>
+    {/* Admin/Reviewer checkboxes */}
+    <div className="mt-4">
+      <label className="flex items-center">
+        <input
+          type="checkbox"
+          checked={userDetails.is_admin}
+          onChange={() => setUserDetails((prev) => ({ ...prev, is_admin: !prev.is_admin }))}
+        />
+        <span className="ml-2">Admin</span>
+      </label>
+      <label className="flex items-center mt-2">
+        <input
+          type="checkbox"
+          checked={userDetails.is_reviewer}
+          onChange={() => setUserDetails((prev) => ({ ...prev, is_reviewer: !prev.is_reviewer }))}
+        />
+        <span className="ml-2">Reviewer</span>
+      </label>
+    </div>
 
-          {/* Buttons for actions */}
-          <div className="mt-6 space-x-4">
-            <button onClick={handleSubmit} className="bg-blue-500 text-white px-4 py-2 rounded">
-              Submit Changes
-            </button>
+    {/* Buttons for actions */}
+    <div className="mt-6 space-x-4">
+      <button onClick={handleSubmit} className="bg-blue-500 text-white px-4 py-2 rounded">
+        Submit Changes
+      </button>
 
-            <button onClick={handleDelete} className="bg-red-500 text-white px-4 py-2 rounded">
-              Delete
-            </button>
+      <button onClick={handleDelete} className="bg-red-500 text-white px-4 py-2 rounded">
+        Delete
+      </button>
 
-            <button onClick={handleBan} className="bg-yellow-500 text-white px-4 py-2 rounded">
-              Ban User
-            </button>
+      <button onClick={handleBan} className="bg-yellow-500 text-white px-4 py-2 rounded">
+        Ban User
+      </button>
 
-            {/* Go Back Button */}
-            <button onClick={handleGoBack} className="bg-gray-500 text-white px-4 py-2 rounded">
-              Go Back
-            </button>
-          </div>
+      {/* Go Back Button */}
+      <button onClick={handleGoBack} className="bg-gray-500 text-white px-4 py-2 rounded">
+        Go Back
+      </button>
+    </div>
+  </>
+)}
+
         </div>
       </div>
     </div>
