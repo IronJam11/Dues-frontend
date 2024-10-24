@@ -32,7 +32,6 @@ const CreateTag = () => {
 
     return (
         <>
-        <Navbar/>
         <div className="flex flex-col items-center mt-10">
             <h1 className="text-3xl font-bold mb-6">Create a New Tag</h1>
             <form onSubmit={handleSubmit} className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-96">

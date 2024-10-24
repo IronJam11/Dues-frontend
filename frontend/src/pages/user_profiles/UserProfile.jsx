@@ -103,7 +103,6 @@ function UserDetailPage() {
 
   return (
     <div className="min-h-screen">
-      <Navbar /> {/* Include the Navbar component */}
 
       <div className="container mx-auto py-10">
         <h1 className="text-4xl font-bold mb-6">User Details</h1>

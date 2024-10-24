@@ -109,9 +109,6 @@ function EditAssignment() {
   
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
-      <header>
-        <Navbar />
-      </header>
       <main className="flex-grow flex items-center justify-center">
         <div className="max-w-lg w-full mx-auto p-6 bg-white shadow-md rounded-lg">
           <h2 className="text-2xl font-bold mb-4 text-center text-black">Edit Assignment</h2>

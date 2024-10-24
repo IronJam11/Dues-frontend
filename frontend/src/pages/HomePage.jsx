@@ -112,7 +112,6 @@ function Homepage() {
 
   return tokensFetched && user ? (
     <>
-      <Navbar />
       <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100 pt-10">
         <h1 className="text-4xl font-extrabold mb-8 text-blue-900">Profile of {user.name}</h1>
         <div className="bg-white p-6 rounded-lg shadow-lg text-center">

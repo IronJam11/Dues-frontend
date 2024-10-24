@@ -67,7 +67,6 @@ function AddUsersPage() {
   return isAuthenticated && (
     <div className="min-h-screen">
       {/* Include the Navbar at the top */}
-      <Navbar />
 
       <div className="p-10">
         <h1 className="text-3xl font-bold mb-6">Add Users to Group Chat</h1>

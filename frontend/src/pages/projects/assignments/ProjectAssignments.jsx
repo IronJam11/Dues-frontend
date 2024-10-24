@@ -36,10 +36,6 @@ function ProjectAssignmentsPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
-      {/* Navbar */}
-      <header>
-        <Navbar />
-      </header>
 
       {/* Main content */}
       <main className="flex-grow flex flex-col items-center justify-start">

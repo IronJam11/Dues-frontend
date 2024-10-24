@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
  // Make sure to import js-cookie
 import handleLogout from '../functions/handleLogout';
 
-function Navbar() {
+function NavbarRegister() {
   const navigate = useNavigate(); // Use useNavigate instead of useHistory
 
   return (
@@ -28,4 +28,4 @@ function Navbar() {
   );
 }
 
-export default Navbar;
+export default NavbarRegister;

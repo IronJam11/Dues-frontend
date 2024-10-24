@@ -109,7 +109,6 @@ const IdeaSubmissionForm = () => {
 
   return (
     <div>
-      <Navbar />
       <div className="container mx-auto p-8">
         <h1 className="text-3xl font-bold mb-6">Propose a New Idea</h1>
 

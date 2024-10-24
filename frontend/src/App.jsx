@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from 'react';
-import {BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import Leaderboard from './pages/leaderboard/Leaderboard';
 import ProjectDetail from './pages/projects/Project-info';
 import ProjectAssignmentsPage from './pages/projects/assignments/ProjectAssignments';
@@ -7,7 +7,9 @@ import IdeasList from './pages/ideabank/AllIdeasPage';
 import IdeaSubmissionForm from './pages/ideabank/CreateNewIdea';
 import UserActivityStatus from './pages/debug/ActivityPage';
 import EditAssignment from './pages/assignment/edit/EditAssignmentPage';
-import WebSocketStatus from './utilities/UserActivitystatus';
+import Navbar from './utilities/Navbar-main';
+import NavbarLogin from './utilities/Navbar-login';
+import NavbarRegister from './utilities/Navbar-register';
 
 // Lazy loading components
 const HomePage = lazy(() => import('./pages/HomePage'));
@@ -34,12 +36,29 @@ const UserDetailPage = lazy(() => import('./pages/user_profiles/UserProfile'));
 const CreateTag = lazy(() => import('./pages/tags/AddTag'));
 const TagList = lazy(() => import('./pages/tags/AllTags'));
 
+// Navbar component that selects the correct navbar based on the route
+function NavbarSelector() {
+  const location = useLocation();
+  
+  // Define paths for which the specific navbars are required
+  const loginPaths = ['/loginpage', '/loginpage/:enrollmentNo'];
+  const registerPaths = ['/registerpage'];
+
+  // Determine which navbar to render based on the current path
+  if (loginPaths.some(path => location.pathname.startsWith(path))) {
+    return <NavbarLogin />;
+  } else if (registerPaths.some(path => location.pathname.startsWith(path))) {
+    return <NavbarRegister />;
+  } else {
+    return <Navbar />;
+  }
+}
 
 function App() {
-  
   return (
-    
     <Suspense fallback={<div>Loading...</div>}>
+      <NavbarSelector /> {/* Render the appropriate navbar */}
+
       <Routes>
         <Route path="/cookies" element={<CookiesPage />} />
 
@@ -52,7 +71,6 @@ function App() {
         {/* Assignments */}
         <Route path="/:enrollmentNo/:userEnrollmentNo" element={<ChatPage />} />
         <Route path="assignments/:unique_name" element={<AssignmentBasePage />} />
-        <Route path="/createAssignment" element={<UploadAssignment />} />
         <Route path="assignments/:unique_name/new-subtask" element={<CreateSubtask />} />
         <Route path="assignments/:unique_name/edit-assignment" element={<EditAssignment />} />
         <Route path="/assignments" element={<AssignmentPage />} />
@@ -78,30 +96,21 @@ function App() {
         <Route path="projects/project-chat/:enrollmentNo/:room/add-users" element={<AddUsersPage />} />
         <Route path="projects/project-info/:roomname" element={<ProjectDetail/>} />
         <Route path="projects/assignments/:roomname" element={<ProjectAssignmentsPage/>} />
-        <Route path="projects/assignments/:roomname" element={<ProjectAssignmentsPage/>} />
-
+       
         {/* Debugging */}
-
-        <Route path="/user-activtiy" element={<UserActivityStatus/>} />
-
-
-
+        <Route path="/user-activity" element={<UserActivityStatus/>} />
+        
         {/* Leaderboard */}
         <Route path="/leaderboard" element={<Leaderboard/>} />
-
-
+        
         {/* Ideas */}
         <Route path="/ideas" element={<IdeasList/>} />
         <Route path="/ideas/create-new-idea" element={<IdeaSubmissionForm/>} />
 
         {/* Debug */}
         <Route path="/activity" element={<UserActivityStatus/>} />
-
-
       </Routes>
-
     </Suspense>
-    
   );
 }
 

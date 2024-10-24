@@ -6,12 +6,15 @@ import Navbar from '../../utilities/Navbar-main';
 import { Chart } from 'chart.js/auto';
 import { Bar } from 'react-chartjs-2';
 import { CategoryScale } from 'chart.js';
+import Modal from 'react-modal'; // Import Modal for popups
+import { Link } from 'react-router-dom'; 
 
 import { registerables } from 'chart.js';
 
 Chart.register(...registerables);
-
 Chart.register(CategoryScale);
+
+Modal.setAppElement('#root'); // Required for accessibility when using modals
 
 const IdeasList = () => {
   const [ideas, setIdeas] = useState([]);
@@ -19,6 +22,7 @@ const IdeasList = () => {
   const [error, setError] = useState(null);
   const [userVotes, setUserVotes] = useState({}); // Store user's vote status for each idea
   const [userDetails, setUserDetails] = useState();
+  const [selectedIdea, setSelectedIdea] = useState(null); // To store the selected idea for modal
   const websocketRef = useRef(null); // WebSocket reference
   const navigate = useNavigate();
 
@@ -34,6 +38,7 @@ const IdeasList = () => {
         });
 
         const ideasData = response.data.ideas;
+        console.log(response.data.ideas);
         setIdeas(ideasData);  // Set ideas initially
       } catch (err) {
         setError('Failed to fetch ideas');
@@ -60,26 +65,23 @@ const IdeasList = () => {
     };
 
     const fetchUserDetails = async () => {
-      try{
-        const response = await axios.get('http://127.0.0.1:8000/users/user-data/',
-            {
-                withCredentials: true,
-                headers: {
-                    Authorization: `Bearer ${Cookies.get('accessToken')}`
-                }
-            }
-        )
+      try {
+        const response = await axios.get('http://127.0.0.1:8000/users/user-data/', {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${Cookies.get('accessToken')}`
+          }
+        });
         setUserDetails(response.data);
-        console.log("response",response.data);
-      } catch(error)
-      {
+        console.log("response", response.data);
+      } catch (error) {
         console.error("Error:- ", error);
       }
-    }
+    };
 
     const initializeData = async () => {
-      await fetchIdeas(); 
-      await fetchUserDetails();// Fetch initial ideas
+      await fetchIdeas();
+      await fetchUserDetails(); // Fetch initial ideas
       await fetchUserVotes(); // Fetch user votes after fetching ideas
     };
 
@@ -96,7 +98,7 @@ const IdeasList = () => {
 
     websocketRef.current.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      
+
       if (data.type === 'vote_update') {
         // Update the idea that has the matching unique_name with the new vote counts
         setIdeas((prevIdeas) =>
@@ -181,6 +183,14 @@ const IdeasList = () => {
     }));
   };
 
+  const openIdeaModal = (idea) => {
+    setSelectedIdea(idea);
+  };
+
+  const closeIdeaModal = () => {
+    setSelectedIdea(null);
+  };
+
   if (loading) {
     return <div className="text-center mt-20 text-lg">Loading ideas...</div>;
   }
@@ -191,7 +201,6 @@ const IdeasList = () => {
 
   return (
     <>
-      <Navbar />
       <div>
         <div className="container mx-auto p-8 flex justify-between items-center">
           <h1 className="text-3xl font-bold mb-4">All Ideas</h1>
@@ -202,83 +211,135 @@ const IdeasList = () => {
             Propose an Idea
           </button>
         </div>
-
+  
         <div className="container mx-auto p-8">
           {ideas.length === 0 ? (
             <div className="text-center mt-10 text-xl font-semibold text-gray-500">
               No ideas, bhai!
             </div>
           ) : (
-            ideas.map((idea) => (
-              <div key={idea.unique_name} className="bg-white shadow-md rounded-lg p-6 mb-6">
-                <h2 className="text-2xl font-semibold">{idea.title}</h2>
-                <p className="mt-2">{idea.description}</p>
-
-                {/* Bar plot for votes */}
-                <div className="mt-4">
-                  <Bar
-                    data={{
-                      labels: ['For', 'Against'],
-                      datasets: [{
-                        label: 'Votes',
-                        data: [idea.for_votes, idea.against_votes],
-                        backgroundColor: [
-                          'rgba(0, 255, 0, 0.2)',
-                          'rgba(255, 0, 0, 0.2)',
-                        ],
-                        borderColor: [
-                          'rgba(0, 255, 0, 1)',
-                          'rgba(255, 0, 0, 1)',
-                        ],
-                        borderWidth: 1
-                      }]
-                    }}
-                    options={{
-                      title: {
-                        display: true,
-                        text: 'Votes'
-                      },
-                      scales: {
-                        yAxes: [{
-                          ticks: {
-                            beginAtZero: true
-                          }
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {ideas.map((idea) => (
+                <div key={idea.unique_name} className="bg-white shadow-md rounded-lg p-4 mb-4">
+                  <h2 className="text-xl font-semibold truncate">{idea.title}</h2>
+                  <p className="mt-2 text-sm text-gray-600 truncate">{idea.description}</p>
+  
+                  {/* Bar plot for votes */}
+                  <div className="mt-4">
+                    <Bar
+                      data={{
+                        labels: ['For', 'Against'],
+                        datasets: [{
+                          label: 'Votes',
+                          data: [idea.for_votes, idea.against_votes],
+                          backgroundColor: [
+                            'rgba(0, 255, 0, 0.2)',
+                            'rgba(255, 0, 0, 0.2)',
+                          ],
+                          borderColor: [
+                            'rgba(0, 255, 0, 1)',
+                            'rgba(255, 0, 0, 1)',
+                          ],
+                          borderWidth: 1
                         }]
-                      }
-                    }}
-                  />
-                </div>
-
-                {/* Voting buttons */}
-                <div className="mt-4">
+                      }}
+                      options={{
+                        scales: {
+                          yAxes: [{
+                            ticks: {
+                              beginAtZero: true
+                            }
+                          }]
+                        }
+                      }}
+                    />
+                  </div>
+  
+                  {/* Voting buttons */}
+                  <div className="mt-4">
+                    <button
+                      className={`${
+                        userVotes[idea.unique_name] === 'for'
+                          ? 'bg-green-700'
+                          : 'bg-green-500 hover:bg-green-700'
+                      } text-white font-bold py-1 px-3 rounded mr-2`}
+                      onClick={() => handleVote(idea.unique_name, 'for')}
+                    >
+                      Vote For
+                    </button>
+                    <button
+                      className={`${
+                        userVotes[idea.unique_name] === 'against'
+                          ? 'bg-red-700'
+                          : 'bg-red-500 hover:bg-red-700'
+                      } text-white font-bold py-1 px-3 rounded`}
+                      onClick={() => handleVote(idea.unique_name, 'against')}
+                    >
+                      Vote Against
+                    </button>
+                  </div>
+  
+                  {/* View Details Button */}
                   <button
-                    className={`${
-                      userVotes[idea.unique_name] === 'for'
-                        ? 'bg-green-700'
-                        : 'bg-green-500 hover:bg-green-700'
-                    } text-white font-bold py-2 px-4 rounded mr-2`}
-                    onClick={() => handleVote(idea.unique_name, 'for')}
+                    className="mt-4 bg-blue-500 text-white font-bold py-2 px-4 rounded"
+                    onClick={() => openIdeaModal(idea)}
                   >
-                    Vote For
-                  </button>
-                  <button
-                    className={`${
-                      userVotes[idea.unique_name] === 'against'
-                        ? 'bg-red-700'
-                        : 'bg-red-500 hover:bg-red-700'
-                    } text-white font-bold py-2 px-4 rounded`}
-                    onClick={() => handleVote(idea.unique_name, 'against')}
-                  >
-                    Vote Against
+                    View Details
                   </button>
                 </div>
-              </div>
-            ))
+              ))}
+            </div>
           )}
         </div>
+  
+        {/* Modal for viewing details */}
+        {selectedIdea && (
+        <Modal
+        isOpen={!!selectedIdea}
+        onRequestClose={closeIdeaModal}
+        contentLabel="Idea Details"
+        ariaHideApp={true}
+        className="bg-white p-8 rounded-lg max-w-lg w-full shadow-lg"
+        overlayClassName="fixed top-0 left-0 right-0 bottom-0 flex justify-center items-center bg-black bg-opacity-50 z-50"
+      >
+        <h2 className="text-2xl font-bold">{selectedIdea.title}</h2>
+        <p className="mt-4">{selectedIdea.description}</p>
+      
+        {/* Mapping through the users */}
+        {selectedIdea.users && selectedIdea.users.length > 0 ? (
+          <div className="mt-4">
+            <h3 className="text-lg font-semibold">Users involved:</h3>
+            <ul className="list-disc list-inside mt-2">
+              {selectedIdea.users.map((user, index) => (
+                <li key={index} className="text-gray-700">
+                  <Link
+                    to={`/user-profiles/${user.enrollmentNo}/`}
+                    className="text-blue-500 hover:underline"
+                  >
+                    {user.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : (
+          <p className="mt-4 text-gray-500">No users associated with this idea.</p>
+        )}
+      
+        <button
+          className="mt-6 bg-red-500 text-white font-bold py-2 px-4 rounded"
+          onClick={closeIdeaModal}
+        >
+          Close
+        </button>
+      </Modal>
+      
+      
+      )}
       </div>
     </>
   );
+  
 };
 
 export default IdeasList;

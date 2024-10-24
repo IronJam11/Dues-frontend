@@ -60,7 +60,6 @@ const AssignmentBasePage = () => {
 
     return (
         <div className="min-h-screen bg-gray-100">
-            <Navbar />
             <div className="container mx-auto px-6 py-8">
                 <div className="flex justify-between items-center mb-8">
                     <button

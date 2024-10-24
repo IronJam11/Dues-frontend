@@ -42,7 +42,7 @@ const CreateSubtask = () => {
 
     return (
         <div>
-            <Navbar /> {/* Include the Navbar */}
+       
             <div className="container mx-auto mt-5 p-5">
                 <h1 className="text-2xl font-bold mb-4">Create Subtasks: </h1>
                 <form onSubmit={handleSubmit} className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">

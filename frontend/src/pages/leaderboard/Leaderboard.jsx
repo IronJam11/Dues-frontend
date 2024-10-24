@@ -3,6 +3,7 @@ import axios from 'axios';
 import Navbar from '../../utilities/Navbar-main'; // Import the Navbar component
 import Cookies from 'js-cookie';
 import { Link } from 'react-router-dom'; // Import Link
+import { motion } from 'framer-motion'; // Import motion from framer-motion
 
 function Leaderboard() {
   const [users, setUsers] = useState([]);
@@ -43,29 +44,31 @@ function Leaderboard() {
 
   return (
     <>
-      <Navbar /> {/* Render Navbar */}
       <div className="min-h-screen bg-gradient-to-br from-gray-100 to-blue-100 py-10">
         <h1 className="text-4xl font-extrabold text-center text-blue-900 mb-10">Leaderboard</h1>
 
         <div className="max-w-4xl mx-auto">
           {/* Iterate over users and display their profiles */}
-          {users.map((user, index) => {
+          {users.map((user) => {
             // Calculate the relative width based on the user's points
             const barWidth = (user.points / maxPoints) * 100;
 
             return (
-              <div
+              <motion.div
                 key={user.enrollmentNo}
                 className="flex flex-col bg-white shadow-md rounded-lg p-4 mb-6"
+                initial={{ opacity: 0, y: 20 }} // Initial state for animation
+                animate={{ opacity: 1, y: 0 }}   // Animation when the component mounts
+                transition={{ duration: 0.5 }}    // Transition properties
               >
                 <div className="flex items-center space-x-4">
                   {/* User's profile picture */}
                   <Link to={`/user-profiles/${user.enrollmentNo}`}>
-                  <img
-                    src={`http://127.0.0.1:8000${user.profilePicture}`}
-                    alt={`${user.name}'s profile`}
-                    className="w-16 h-16 rounded-full object-cover"
-                  />
+                    <img
+                      src={`http://127.0.0.1:8000${user.profilePicture}`}
+                      alt={`${user.name}'s profile`}
+                      className="w-16 h-16 rounded-full object-cover"
+                    />
                   </Link>
                   <div>
                     {/* User's name and alias wrapped in Link */}
@@ -76,19 +79,21 @@ function Leaderboard() {
                   </div>
                 </div>
 
-                {/* Bar representing the user's points */}
-                <div className="mt-4 w-full bg-gray-200 rounded-full h-4">
-                  <div
-                    className="bg-blue-500 h-4 rounded-full"
-                    style={{ width: `${barWidth}%` }} // Dynamic width based on points
-                  ></div>
+                {/* Bar representing the user's points with animations */}
+                <div className="mt-4 w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+                  <motion.div
+                    className="bg-blue-500 h-full rounded-full"
+                    initial={{ width: 0 }} // Start with width 0
+                    animate={{ width: `${barWidth}%` }} // Animate to the calculated width
+                    transition={{ duration: 0.7, ease: "easeInOut" }} // Animation properties
+                  ></motion.div>
                 </div>
 
                 {/* Display the user's points */}
                 <div className="mt-2 text-lg font-semibold text-blue-700">
                   Points: {user.points}
                 </div>
-              </div>
+              </motion.div>
             );
           })}
         </div>

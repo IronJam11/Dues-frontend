@@ -82,7 +82,7 @@ function EditProfilePage() {
 
   return (
     <>
-      <Navbar /> {/* Use your existing Navbar */}
+
       <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100 pt-10">
         <h1 className="text-4xl font-extrabold mb-8 text-blue-900">Edit User Details</h1>
         <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">

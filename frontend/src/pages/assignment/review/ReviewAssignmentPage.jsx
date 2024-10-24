@@ -54,7 +54,6 @@ const ReviewSubmissionPage = () => {
 
     return (
         <>
-            <Navbar />
             <div className="container mx-auto mt-16">
                 {submission ? (
                     <div className="p-4 border border-gray-300 rounded-lg shadow-md bg-white">

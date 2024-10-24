@@ -131,7 +131,6 @@ function AssignmentPage() {
 
   return (
     <div className="min-h-screen">
-      <Navbar />
       <div className="container mx-auto py-10">
         {isReviewer && (
           <button

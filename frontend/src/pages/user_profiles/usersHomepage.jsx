@@ -53,7 +53,6 @@ function UserProfilesPage() {
 
   return isAuthenticated ? (
     <>
-      <Navbar /> {/* Include Navbar at the top */}
       <div className="min-h-screen flex flex-col items-center justify-center pt-10">
         <h1 className="text-4xl font-extrabold mb-8 text-blue-900">User Profiles</h1>
 
