@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../utilities/Navbar-main';
 import Cookies from 'js-cookie';
+import LoadingPage from '../utilities/LazyLoadingpage';
 
 function Homepage() {
   const [user, setUser] = useState(null);
@@ -103,7 +104,7 @@ function Homepage() {
   };
 
   if (loading) {
-    return <div>Loading...</div>; // Show loading state
+    return <LoadingPage/>; // Show loading state
   }
 
   if (error) {

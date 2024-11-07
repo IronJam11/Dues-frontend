@@ -17,6 +17,9 @@ function CreateProject() {
       try {
         const response = await axios.get('http://127.0.0.1:8000/users/all-users-details/', {
           withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${Cookies.get('accessToken')}`,
+          }
         });
         setAvailableUsers(response.data.users);
       } catch (error) {
@@ -51,9 +54,10 @@ function CreateProject() {
     }
 
     try {
-      const response = await axios.post('http://127.0.0.1:8000/projects/new-project/', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data', // Set to multipart/form-data
+      const response = await axios.post('http://127.0.0.1:8000/workspaces/new-workspace/', formData, {
+        withCredentials: true,
+        headers: { // Set to multipart/form-data
+          
           Authorization: `Bearer ${Cookies.get('accessToken')}`,
         },
       });
@@ -71,7 +75,7 @@ function CreateProject() {
         };
 
         try {
-          const responsdata = await axios.post('http://127.0.0.1:8000/chats/groupchat/newproject/room/', roomdata, {
+          const responsdata = await axios.post('http://127.0.0.1:8000/chats/groupchat/new-workspace/room/', roomdata, {
             withCredentials: true,
             headers: {
               'Content-Type': 'application/json',

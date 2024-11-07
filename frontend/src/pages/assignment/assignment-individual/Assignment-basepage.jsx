@@ -24,6 +24,7 @@ const AssignmentBasePage = () => {
                     Authorization: `Bearer ${Cookies.get('accessToken')}`,
                 },
             });
+            console.log(response.data);
             if (response.data.has_permission) {
                 setIsReviewer(true);
             } else {
@@ -43,7 +44,7 @@ const AssignmentBasePage = () => {
     }, [unique_name]);
 
     const handleBackToAssignments = () => {
-        navigate('/assignments');
+        navigate(-1);
     };
 
     const handleAddSubtask = () => {

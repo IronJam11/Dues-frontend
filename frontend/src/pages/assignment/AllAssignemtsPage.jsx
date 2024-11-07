@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from '../../utilities/Navbar-main'; 
 import { useAuth } from '../hooks/useAuth';
@@ -9,6 +9,7 @@ import AssignmentsToSubmit from './assignments-components/AssignmentsToSubmitcom
 import SubmittedAssignments from './assignments-components/submittedAssignmentsComponent'; // Import SubmittedAssignments
 
 function AssignmentPage() {
+  const {roomname} = useParams();
   const [assignmentsToReview, setAssignmentsToReview] = useState([]);
   const [assignmentsToSubmit, setAssignmentsToSubmit] = useState([]);
   const [submittedAssignments, setSubmittedAssignments] = useState([]); // State for submitted assignments
@@ -28,7 +29,7 @@ function AssignmentPage() {
           },
         });
         console.log("isadmin:- ", res.data);
-        setIsReviewer(res.data['is_reviewer']); // Set the isReviewer flag based on response
+        setIsReviewer(true); // Set the isReviewer flag based on response
       } catch (err) {
         console.error('Error fetching user details:', err.message);
       }
@@ -42,7 +43,7 @@ function AssignmentPage() {
     const fetchAssignmentsToReview = async () => {
       try {
         const token = Cookies.get('accessToken');
-        const res = await axios.get('http://127.0.0.1:8000/assignments/get-all/reviewee/', {
+        const res = await axios.get(`http://127.0.0.1:8000/assignments/get-all/reviewee/${roomname}/`, {
           withCredentials: true,
           headers: {
             'Authorization': `Bearer ${token}`, 
@@ -62,7 +63,7 @@ function AssignmentPage() {
     const fetchAssignmentsToSubmit = async () => {
       try {
         const token = Cookies.get('accessToken');
-        const res = await axios.get('http://127.0.0.1:8000/assignments/get-all/reviewer/', {
+        const res = await axios.get(`http://127.0.0.1:8000/assignments/get-all/reviewer/${roomname}/`, {
           withCredentials: true,
           headers: {
             'Authorization': `Bearer ${token}`, 
@@ -82,7 +83,7 @@ function AssignmentPage() {
     const fetchSubmittedAssignments = async () => {
       try {
         const token = Cookies.get('accessToken');
-        const res = await axios.get('http://127.0.0.1:8000/assignments/completed-assignments/', {
+        const res = await axios.get(`http://127.0.0.1:8000/assignments/completed-assignments/${roomname}/`, {
           withCredentials: true,
           headers: {
             'Authorization': `Bearer ${token}`, 
@@ -106,7 +107,7 @@ function AssignmentPage() {
   };
 
   const handleAddSubtasks = (unique_name) => {
-    navigate(`${unique_name}/new-subtask`);
+    navigate(`/workspaces/assignments/new-subtask/${unique_name}`);
   };
 
   const handleEditAssignment = (unique_name) => {
@@ -134,7 +135,7 @@ function AssignmentPage() {
       <div className="container mx-auto py-10">
         {isReviewer && (
           <button
-            onClick={() => navigate('/assignments/new')}
+            onClick={() => navigate(`/workspaces/new-assignment/${roomname}`)}
             className="bg-blue-500 text-white px-4 py-2 rounded absolute right-10 top-23"
           >
             Add Assignment

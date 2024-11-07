@@ -1,6 +1,7 @@
 // AssignmentsToSubmit.js
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import AssignmentCard from './AssignmentCard';
 
 const AssignmentsToSubmit = ({ assignmentsToSubmit, handleViewAssignment, formatDate }) => {
   const navigate = useNavigate();
@@ -11,29 +12,13 @@ const AssignmentsToSubmit = ({ assignmentsToSubmit, handleViewAssignment, format
       {assignmentsToSubmit.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {assignmentsToSubmit.map(assignment => (
-            <div
+            <AssignmentCard
               key={assignment.unique_name}
-              className="bg-white shadow-md p-6 rounded-xl text-black"
-            >
-              <h3 className="text-xl font-semibold">{assignment.name}</h3>
-              <p>{assignment.description}</p>
-              <p className="text-gray-500 mb-4">Due Date: {formatDate(assignment.deadline)}</p>
-
-              <div className="flex flex-wrap justify-between">
-                <button
-                  onClick={() => handleViewAssignment(assignment.unique_name)}
-                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-3 rounded mb-2"
-                >
-                  View
-                </button>
-                <button
-                  onClick={() => navigate(`/submit-assignment/${assignment.unique_name}`)}
-                  className="bg-pink-500 hover:bg-pink-600 text-white font-bold py-2 px-3 rounded mb-2"
-                >
-                  Submit
-                </button>
-              </div>
-            </div>
+              assignment={assignment}
+              formatDate={formatDate}
+              handleViewAssignment={handleViewAssignment}
+              handleSubmitAssignment={(unique_name) => navigate(`/submit-assignment/${unique_name}`)}
+            />
           ))}
         </div>
       ) : (

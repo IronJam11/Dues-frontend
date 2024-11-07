@@ -14,7 +14,7 @@ function ProjectAssignmentsPage() {
     const fetchAssignments = async () => {
       try {
         const token = Cookies.get('accessToken');
-        const response = await axios.get(`http://127.0.0.1:8000/projects/assignments/${roomname}/`, {
+        const response = await axios.get(`http://127.0.0.1:8000/workspaces/assignments/${roomname}/`, {
           withCredentials: true,
           headers: {
             Authorization: `Bearer ${token}`
@@ -31,7 +31,7 @@ function ProjectAssignmentsPage() {
 
   // Handle navigation to the add assignment page
   const handleAddAssignment = () => {
-    navigate(`/projects/${roomname}/add-assignment`);
+    navigate(`/workspaces/new-assignment/${roomname}`);
   };
 
   return (

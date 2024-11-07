@@ -10,7 +10,6 @@ import EditAssignment from './pages/assignment/edit/EditAssignmentPage';
 import Navbar from './utilities/Navbar-main';
 import NavbarLogin from './utilities/Navbar-login';
 import NavbarRegister from './utilities/Navbar-register';
-
 // Lazy loading components
 const HomePage = lazy(() => import('./pages/HomePage'));
 const LoginPage = lazy(() => import('./pages/auth/LoginPage'));
@@ -18,7 +17,7 @@ const RegisterPage = lazy(() => import('./pages/auth/RegisterPage'));
 const UploadAssignment = lazy(() => import('./pages/assignment/create/create-assignment'));
 const AssignmentPage = lazy(() => import('./pages/assignment/AllAssignemtsPage'));
 const AssignmentSubmissionPage = lazy(() => import('./pages/assignment/submit/SubmitAssignment'));
-const AssignmentBasePage = lazy(() => import('./pages/assignment/assignment-reviewee/Assignment-basepage'));
+const AssignmentBasePage = lazy(() => import('./pages/assignment/assignment-individual/Assignment-basepage'));
 const ReviewSubmissionPage = lazy(() => import('./pages/assignment/review/ReviewAssignmentPage'));
 const UserProfilesPage = lazy(() => import('./pages/user_profiles/usersHomepage'));
 const EditProfilePage = lazy(() => import('./pages/user_profiles/editProfile'));
@@ -31,10 +30,12 @@ const AddUsersPage = lazy(() => import('./pages/groupchat/AddUserspage'));
 const CookiesPage = lazy(() => import('./pages/debug/CookiePage'));
 const UserDetailsPage = lazy(() => import('./pages/auth/UserDetailsSetupPage'));
 const CookieExample = lazy(() => import('./pages/debug/SampleCookiepage'));
-const LoadingPage = lazy(() => import('./functions/handleLoginWithChanneli'));
+// const LoadingPage = lazy(() => import('./functions/handleLoginWithChanneli'));
 const UserDetailPage = lazy(() => import('./pages/user_profiles/UserProfile'));
 const CreateTag = lazy(() => import('./pages/tags/AddTag'));
 const TagList = lazy(() => import('./pages/tags/AllTags'));
+import LoadingPage from './utilities/LazyLoadingpage';
+import UserProfileEdit from './pages/projects/user-profiles/EditUserInfo';
 
 // Navbar component that selects the correct navbar based on the route
 function NavbarSelector() {
@@ -56,8 +57,8 @@ function NavbarSelector() {
 
 function App() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <NavbarSelector /> {/* Render the appropriate navbar */}
+    <Suspense fallback={<LoadingPage/>}>
+      <NavbarSelector />
 
       <Routes>
         <Route path="/cookies" element={<CookiesPage />} />
@@ -70,9 +71,10 @@ function App() {
 
         {/* Assignments */}
         <Route path="/:enrollmentNo/:userEnrollmentNo" element={<ChatPage />} />
-        <Route path="assignments/:unique_name" element={<AssignmentBasePage />} />
-        <Route path="assignments/:unique_name/new-subtask" element={<CreateSubtask />} />
-        <Route path="assignments/:unique_name/edit-assignment" element={<EditAssignment />} />
+        <Route path="workspaces/assignments/:roomname/:unique_name" element={<AssignmentBasePage />} />
+        <Route path="workspaces/assignments/new-subtask/:unique_name" element={<CreateSubtask />} />
+        <Route path="workspaces/assignments/:roomname/:unique_name/new-subtask/" element={<CreateSubtask />} />
+        <Route path="/assignments/:unique_name/edit-assignment" element={<EditAssignment />} />
         <Route path="/assignments" element={<AssignmentPage />} />
         <Route path="/assignments/new" element={<UploadAssignment />} />
         <Route path="/submit-assignment/:unique_name" element={<AssignmentSubmissionPage />} />
@@ -95,6 +97,9 @@ function App() {
         <Route path="projects/project-chat/:enrollmentNo/:room" element={<GroupChatPage />} />
         <Route path="projects/project-chat/:enrollmentNo/:room/add-users" element={<AddUsersPage />} />
         <Route path="projects/project-info/:roomname" element={<ProjectDetail/>} />
+        <Route path="projects/project-info/:roomname/:enrollmentNo" element={<UserProfileEdit/>} />
+        <Route path="workspaces/assignments/:roomname" element={<AssignmentPage />} />
+        <Route path="workspaces/new-assignment/:roomname" element={<UploadAssignment/>} />
         <Route path="projects/assignments/:roomname" element={<ProjectAssignmentsPage/>} />
        
         {/* Debugging */}

@@ -1,25 +1,30 @@
-// TagList.jsx
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';  // Import useNavigate for navigation
-import Navbar from '../../utilities/Navbar-main';
+import { useAuth } from '../hooks/useAuth';
 
 const TagList = () => {
     const [tags, setTags] = useState([]);
     const navigate = useNavigate();  // Initialize useNavigate for redirection
+    const isAuthenticated = useAuth();
 
     // Fetch all tags from the API
     useEffect(() => {
-        const fetchTags = async () => {
-            try {
-                const response = await axios.get('http://localhost:8000/tags/');
-                setTags(response.data);
-            } catch (error) {
-                console.error('Error fetching tags:', error);
-            }
-        };
-        fetchTags();
-    }, []);
+        // Only proceed if the user is authenticated
+        if (isAuthenticated) {
+            const fetchTags = async () => {
+                try {
+                    const response = await axios.get('http://localhost:8000/tags/');
+                    setTags(response.data);
+                } catch (error) {
+                    console.error('Error fetching tags:', error);
+                }
+            };
+            fetchTags();
+        } else {
+            console.log("User is not authenticated, cannot fetch tags.");
+        }
+    }, [isAuthenticated]);  // Only run when authentication state changes
 
     return (
         <>

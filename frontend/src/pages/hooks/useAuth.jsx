@@ -18,11 +18,11 @@ export function useAuth() {
         }
       })
         .then(response => {
-          console.log(response.data);
+          console.log("token verification response:", response.data);
           if (response.data.valid) {
             // Set new tokens in cookies
-            Cookies.set('access-token', response.data.access_token, { path: '/' });
-            Cookies.set('refresh-token', response.data.refresh_token, { path: '/' });
+            Cookies.set('accessToken', response.data.access_token, { path: '/' });
+            Cookies.set('refreshToken', response.data.refresh_token, { path: '/' });
             setIsAuthenticated(true);
           } else {
             console.log("Token has expired");

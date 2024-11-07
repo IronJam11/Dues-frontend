@@ -23,7 +23,6 @@ function GroupChatPage() {
   const isAuthenticated = useAuth();
 
 
-
   // Fetch room details including participants and admins
   const fetchRoomDetails = async () => {
     try {
@@ -100,6 +99,8 @@ function GroupChatPage() {
 
   // Initialize WebSocket for messages
   const initializeWebSocket = () => {
+    console.lo
+
     const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
     const socketUrl = `${protocol}://${window.location.hostname}:8000/ws/group/${room}/${enrollmentNo}/`;
     socketRef.current = new WebSocket(socketUrl);
@@ -188,7 +189,6 @@ function GroupChatPage() {
 
   return isAuthenticated && (
     <>
-    <Navbar />
     <div className="min-h-screen flex flex-col lg:flex-row">
       
       {/* Left Section: Chat */}

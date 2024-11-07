@@ -1,27 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import Navbar from '../../utilities/Navbar-main';  // Adjust path if needed
+import Navbar from '../../utilities/Navbar-main'; // Adjust path if needed
 import Cookies from 'js-cookie';
-import { useParams } from 'react-router-dom'; // Import useParams
+import { useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const ProjectDetail = () => {
-  const { roomname } = useParams();  // Extract roomname from the URL params
-  const [project, setProject] = useState(null);
+  const { roomname } = useParams();
+  const [workspace, setWorkspace] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch project details by roomname
     const fetchProject = async () => {
       try {
-        const response = await axios.get(`http://127.0.0.1:8000/projects/project-details/${roomname}/`, {
+        const response = await axios.get(`http://127.0.0.1:8000/workspaces/workspace-details/${roomname}/`, {
           withCredentials: true,
           headers: {
             Authorization: `Bearer ${Cookies.get('accessToken')}`
           }
         });
-        console.log(response.data);
-        setProject(response.data.project);
+        console.log('PROJECT DETAILS', response.data);
+        setWorkspace(response.data.workspace);
         setLoading(false);
       } catch (err) {
         setError('Failed to fetch project details');
@@ -33,7 +34,7 @@ const ProjectDetail = () => {
   }, [roomname]);
 
   if (loading) {
-    return <div className="text-center mt-20 text-lg">Loading project details...</div>;
+    return <div className="text-center mt-20 text-lg text-gray-600">Loading project details...</div>;
   }
 
   if (error) {
@@ -41,41 +42,60 @@ const ProjectDetail = () => {
   }
 
   return (
-    <div>
-      <div className="container mx-auto p-8">
-        <h1 className="text-3xl font-bold mb-4">{project.name}</h1>
-        <p className="mb-4">{project.description}</p>
+    <div className="min-h-screen bg-gray-100">
+      <div className="container mx-auto p-8 bg-white shadow-lg rounded-lg mt-10">
+        <h1 className="text-4xl font-extrabold text-gray-800 mb-6">{workspace.name}</h1>
+        <p className="text-lg text-gray-600 mb-4">{workspace.description}</p>
 
-        <div className="mb-8">
+        <div className="mb-8 flex flex-col md:flex-row items-start gap-8">
           <img
-             src={`http://127.0.0.1:8000${project.group_image}`}
+            src={`http://127.0.0.1:8000${workspace.group_image}`}
             alt="Group"
-            className="w-48 h-48 object-cover rounded-lg shadow-md mb-4"
+            className="w-full md:w-48 h-48 object-cover rounded-lg shadow-md"
           />
-          <p><strong>Time Assigned:</strong> {new Date(project.time_assigned).toLocaleString()}</p>
-          <p><strong>Deadline:</strong> {new Date(project.deadline).toLocaleString()}</p>
-          <p><strong>Room Name:</strong> {project.roomname}</p>
+          <div className="text-gray-700">
+            <p className="text-lg"><strong>Time Assigned:</strong> {new Date(workspace.time_created).toLocaleString()}</p>
+            <p className="text-lg"><strong>Deadline:</strong> {new Date(workspace.deadline).toLocaleString()}</p>
+            <p className="text-lg"><strong>Room Name:</strong> {workspace.roomname}</p>
+          </div>
         </div>
 
-        <h2 className="text-2xl font-semibold mb-4">Participants</h2>
-        <ul className="space-y-4">
-          {project.participants.map((participant) => (
-            <li key={participant.id} className="bg-gray-100 p-4 rounded-lg shadow-md">
-              <p><strong>Name:</strong> {participant.name}</p>
-              <p><strong>Alias:</strong> {participant.alias}</p>
-              <p><strong>Email:</strong> {participant.email}</p>
+        <h2 className="text-3xl font-semibold text-gray-800 mb-4">Participants</h2>
+        <ul className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {workspace.participants.map((participant) => (
+            <li key={participant.id} className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center text-center">
+              <img
+                src={`http://127.0.0.1:8000${participant.profilePicture}`}
+                alt={`${participant.name}'s profile`}
+                className="w-24 h-24 object-cover rounded-full mb-4"
+              />
+              <p className="text-lg font-bold text-gray-700">{participant.name}</p>
+              <p className="text-sm text-gray-500">{participant.alias}</p>
+              <p className="text-sm text-gray-500">{participant.email}</p>
+
+              {/* Show edit and delete buttons if the user is an admin */}
+              {workspace.isAdmin && (
+                <div className="mt-4 flex gap-4">
+                  <button className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-600" onClick={() => {
+                    navigate(`${participant.enrollmentNo}`);
+                  }}>Edit Details</button>
+                  <button className="bg-red-500 text-white px-4 py-2 rounded-lg shadow hover:bg-red-600">Delete</button>
+                </div>
+              )}
             </li>
           ))}
         </ul>
 
-        <h2 className="text-2xl font-semibold mt-8 mb-4">Assignments</h2>
-        <ul className="space-y-4">
-          {project.assignments.map((assignment) => (
-            <li key={assignment.id} className="bg-gray-100 p-4 rounded-lg shadow-md">
-              <p><strong>Name:</strong> {assignment.name}</p>
-              <p><strong>Description:</strong> {assignment.description}</p>
-              <p><strong>Total Points:</strong> {assignment.total_points}</p>
-              <p><strong>Deadline:</strong> {new Date(assignment.deadline).toLocaleString()}</p>
+        <h2 className="text-3xl font-semibold text-gray-800 mt-10 mb-4">Assignments</h2>
+        <ul className="space-y-6">
+          {workspace.assignments.map((assignment) => (
+            <li key={assignment.id} className="bg-white p-6 rounded-lg shadow-md">
+              <h3 className="text-xl font-semibold text-gray-700">{assignment.name}</h3>
+              <p className="text-gray-600">{assignment.description}</p>
+              <div className="flex justify-between mt-4 text-gray-500">
+                <p><strong>Total Points:</strong> {assignment.total_points}</p>
+                <p><strong>Deadline:</strong> {new Date(assignment.deadline).toLocaleString()}</p>
+              </div>
             </li>
           ))}
         </ul>

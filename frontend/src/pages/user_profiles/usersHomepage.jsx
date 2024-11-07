@@ -28,7 +28,7 @@ function UserProfilesPage() {
             'Authorization': `Bearer ${token}`,
           },
         });
-        setUserDetails(res.data); // Set user details (admin status)
+        setUserDetails(res.data);// Set user details (admin status)
       } catch (err) {
         console.error('Error fetching user details:', err.message);
       }
@@ -38,7 +38,7 @@ function UserProfilesPage() {
   }, [isAuthenticated]);
 
   useEffect(() => {
-    // Set filteredUsers to all users initially when WebSocket provides the data
+    
     setFilteredUsers(allUsers);
   }, [allUsers]);
 
@@ -61,7 +61,7 @@ function UserProfilesPage() {
 
         {/* Conditionally render UserList or UserListAdmin based on admin status */}
         {userDetails.is_admin ? (
-          <UserListAdmin users={filteredUsers} />
+          <UserList users={filteredUsers} />
         ) : (
           <UserList users={filteredUsers} />
         )}
