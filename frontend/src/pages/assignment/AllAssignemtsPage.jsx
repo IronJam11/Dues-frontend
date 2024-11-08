@@ -22,14 +22,14 @@ function AssignmentPage() {
     const fetchUserDetails = async () => {
       try {
         const token = Cookies.get('accessToken');
-        const res = await axios.get('http://127.0.0.1:8000/users/user-data/', {
+        const res = await axios.get(`http://127.0.0.1:8000/workspaces/user/permissions/${roomname}/`, {
           withCredentials: true,
           headers: {
             'Authorization': `Bearer ${token}`,
           },
         });
         console.log("isadmin:- ", res.data);
-        setIsReviewer(true); // Set the isReviewer flag based on response
+        setIsReviewer(res.data.is_reviewer); // Set the isReviewer flag based on response
       } catch (err) {
         console.error('Error fetching user details:', err.message);
       }

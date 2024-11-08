@@ -36,6 +36,7 @@ const CreateTag = lazy(() => import('./pages/tags/AddTag'));
 const TagList = lazy(() => import('./pages/tags/AllTags'));
 import LoadingPage from './utilities/LazyLoadingpage';
 import UserProfileEdit from './pages/projects/user-profiles/EditUserInfo';
+import AddUsersToWorkspace from './pages/projects/add-users/AddUsersPage';
 
 // Navbar component that selects the correct navbar based on the route
 function NavbarSelector() {
@@ -97,6 +98,7 @@ function App() {
         <Route path="projects/project-chat/:enrollmentNo/:room" element={<GroupChatPage />} />
         <Route path="projects/project-chat/:enrollmentNo/:room/add-users" element={<AddUsersPage />} />
         <Route path="projects/project-info/:roomname" element={<ProjectDetail/>} />
+        <Route path="projects/project-info/:roomname/add-users" element={<AddUsersToWorkspace/>} />
         <Route path="projects/project-info/:roomname/:enrollmentNo" element={<UserProfileEdit/>} />
         <Route path="workspaces/assignments/:roomname" element={<AssignmentPage />} />
         <Route path="workspaces/new-assignment/:roomname" element={<UploadAssignment/>} />

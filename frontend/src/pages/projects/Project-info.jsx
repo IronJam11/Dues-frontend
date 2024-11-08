@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import Navbar from '../../utilities/Navbar-main'; // Adjust path if needed
 import Cookies from 'js-cookie';
-import { useParams } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
 const ProjectDetail = () => {
   const { roomname } = useParams();
@@ -12,14 +10,32 @@ const ProjectDetail = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
+  async function handleRemove(enrollmentNo) {
+    try {
+      const response = await axios.post(
+        `http://127.0.0.1:8000/workspaces/delete-user/`,
+        { roomname, enrollmentNo },
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${Cookies.get('accessToken')}`,
+          },
+        }
+      );
+      console.log("response for removal", response.data);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  }
+
   useEffect(() => {
     const fetchProject = async () => {
       try {
         const response = await axios.get(`http://127.0.0.1:8000/workspaces/workspace-details/${roomname}/`, {
           withCredentials: true,
           headers: {
-            Authorization: `Bearer ${Cookies.get('accessToken')}`
-          }
+            Authorization: `Bearer ${Cookies.get('accessToken')}`,
+          },
         });
         console.log('PROJECT DETAILS', response.data);
         setWorkspace(response.data.workspace);
@@ -43,9 +59,19 @@ const ProjectDetail = () => {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <div className="container mx-auto p-8 bg-white shadow-lg rounded-lg mt-10">
+      <div className="container mx-auto p-8 bg-white shadow-lg rounded-lg mt-10 relative">
         <h1 className="text-4xl font-extrabold text-gray-800 mb-6">{workspace.name}</h1>
         <p className="text-lg text-gray-600 mb-4">{workspace.description}</p>
+
+        {/* Add Users Button */}
+        {workspace.isAdmin && (
+          <button
+            className="absolute top-8 right-8 bg-green-500 text-white px-4 py-2 rounded-lg shadow hover:bg-green-600"
+            onClick={() => navigate(`add-users`)}
+          >
+            Add Users
+          </button>
+        )}
 
         <div className="mb-8 flex flex-col md:flex-row items-start gap-8">
           <img
@@ -76,10 +102,20 @@ const ProjectDetail = () => {
               {/* Show edit and delete buttons if the user is an admin */}
               {workspace.isAdmin && (
                 <div className="mt-4 flex gap-4">
-                  <button className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-600" onClick={() => {
-                    navigate(`${participant.enrollmentNo}`);
-                  }}>Edit Details</button>
-                  <button className="bg-red-500 text-white px-4 py-2 rounded-lg shadow hover:bg-red-600">Delete</button>
+                  <button
+                    className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-600"
+                    onClick={() => {
+                      navigate(`${participant.enrollmentNo}`);
+                    }}
+                  >
+                    Edit Details
+                  </button>
+                  <button
+                    className="bg-red-500 text-white px-4 py-2 rounded-lg shadow hover:bg-red-600"
+                    onClick={() => handleRemove(participant.enrollmentNo)}
+                  >
+                    Remove
+                  </button>
                 </div>
               )}
             </li>
