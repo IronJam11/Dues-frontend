@@ -1,29 +1,33 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
- // Make sure to import js-cookie
-import handleLogout from '../functions/handleLogout';
+import { motion } from 'framer-motion';
 
 function NavbarLogin() {
-  const navigate = useNavigate(); // Use useNavigate instead of useHistory
+  const navigate = useNavigate();
 
   return (
-    <nav className="bg-gray-800 p-4 flex justify-between items-center">
-      <div className="text-white text-2xl font-bold">
-        <Link to="/" className="hover:text-gray-300">
-         DUES
+    <nav className="bg-gray-800 p-4 flex justify-between items-center shadow-md">
+      {/* Animated Logo */}
+      <motion.div 
+        className="text-white text-2xl font-bold"
+        initial={{ opacity: 0, x: -50 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+      >
+        <Link to="/" className="hover:text-indigo-400 text-4xl transition duration-300">
+          DUES
         </Link>
-      </div>
-      <div>
-        <button
-          onClick={() => {
-            navigate("/registerpage");
+      </motion.div>
 
-          }}
-          className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-        >
-          Register 
-        </button>
-      </div>
+      {/* Register Button with Hover Effect */}
+      <motion.button
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={() => navigate("/registerpage")}
+        className="bg-indigo-500 text-white font-semibold py-2 px-4 rounded-lg shadow hover:bg-indigo-600 transition duration-300"
+      >
+        Register
+      </motion.button>
     </nav>
   );
 }

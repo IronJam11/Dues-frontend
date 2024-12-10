@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios'; 
-import Cookies from 'js-cookie'
+import axios from 'axios';
+import Cookies from 'js-cookie';
 
 export function useAuth() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);  // Add loading state
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -18,30 +19,36 @@ export function useAuth() {
         }
       })
         .then(response => {
-          console.log("token verification response:", response.data);
+          console.log("Token verification response:", response.data);
           if (response.data.valid) {
-            // Set new tokens in cookies
-            Cookies.set('accessToken', response.data.access_token, { path: '/' });
-            Cookies.set('refreshToken', response.data.refresh_token, { path: '/' });
+            if (response.data.access_token && response.data.refresh_token) {
+              Cookies.set('accessToken', response.data.access_token);
+              Cookies.set('refreshToken', response.data.refresh_token);
+            }
             setIsAuthenticated(true);
           } else {
             console.log("Token has expired");
-            setIsAuthenticated(false);
-            document.cookie = 'jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-            navigate('/loginpage'); 
+            Cookies.remove('accessToken', { path: '/' });
+            Cookies.remove('refreshToken', { path: '/' });
+            navigate('/loginpage');
           }
         })
         .catch(error => {
           console.error("Error verifying token:", error);
-          setIsAuthenticated(false);
+          Cookies.remove('accessToken', { path: '/' });
+          Cookies.remove('refreshToken', { path: '/' });
           navigate('/loginpage');
+        })
+        .finally(() => {
+          setIsLoading(false);  // Set loading to false after check completes
         });
     } else {
       console.log("User is not authenticated");
       setIsAuthenticated(false);
+      setIsLoading(false);  // Set loading to false if no tokens
       navigate('/loginpage');
     }
   }, [navigate]);
 
-  return isAuthenticated;
+  return { isAuthenticated, isLoading };
 }

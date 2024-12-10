@@ -80,7 +80,7 @@ function UploadAssignment() {
     };
 
     try {
-      const response = await axios.post('http://localhost:8000/assignments/create-assignment/', data, {
+      const response = await axios.post(`http://localhost:8000/assignments/create-assignment/${roomname}/`, data, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${Cookies.get('accessToken')}`

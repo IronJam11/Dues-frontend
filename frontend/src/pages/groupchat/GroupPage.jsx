@@ -50,7 +50,13 @@ function GroupChatPage() {
     }
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/chats/groupchat/get/room-details/${room}/`
+        `http://127.0.0.1:8000/chats/groupchat/get/room-details/${room}/`,
+        { withCredentials: true,
+          headers:
+          {
+            Authorization: `Bearer ${Cookies.get('accessToken')}`
+          }
+         }
       );
       setRoomDetails(response.data);
       setParticipants(response.data.participants);
@@ -64,8 +70,23 @@ function GroupChatPage() {
   const fetchMessages = async () => {
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/chats/groupchat/get/room-messages/${room}/`
+        `http://127.0.0.1:8000/chats/groupchat/get/room-messages/${room}/`,
+        { withCredentials: true,
+          headers:
+          {
+            Authorization: `Bearer ${Cookies.get('accessToken')}`
+          }
+         }
       );
+      if(response.status == 403)
+      {
+        setAdmins([]);
+        setMessages([]);
+        setParticipants([]);
+        alert("You are not a member bitch!");
+        navigate('/');
+      }
+
       setMessages([...response.data.messages]);
 
       if (chatMessagesRef.current) {
@@ -73,6 +94,11 @@ function GroupChatPage() {
       }
     } catch (error) {
       console.error('Error fetching messages:', error);
+      setAdmins([]);
+        setMessages([]);
+        setParticipants([]);
+        alert("You are not a member bitch!");
+        navigate('/');
     }
   };
 

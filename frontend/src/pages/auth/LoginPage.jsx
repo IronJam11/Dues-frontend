@@ -3,21 +3,19 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../../utilities/Navbar-login';
 import handleLogin from '../../functions/handleLogin';
 import handleLoginWithChannelI from '../../functions/handleLoginWithChanneli';
-import { useAuth } from '../hooks/useAuth';
 
 function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [displayText, setDisplayText] = useState('');
   const navigate = useNavigate();
-  // const isAuthenticated = useAuth(); // Call useAuth to check authentication
 
   // Typing animation effect
   useEffect(() => {
     const phrases = [
       'Manage assignments',
-      'Hit weekly goals',
-      'Chat with your group people',
+      'Achieve weekly goals',
+      'Collaborate with your group',
     ];
 
     let currentPhraseIndex = 0;
@@ -33,7 +31,7 @@ function LoginPage() {
           currentCharIndex++;
         } else {
           isDeleting = true;
-          setTimeout(() => {}, 1500); // Pause before deleting
+          setTimeout(() => {}, 1500);
         }
       } else {
         if (currentCharIndex > 0) {
@@ -46,63 +44,67 @@ function LoginPage() {
       }
     };
 
-    const interval = setInterval(typeEffect, 80);
-
+    const interval = setInterval(typeEffect, 100);
     return () => clearInterval(interval);
   }, []);
 
-  // Redirect if authenticated
-  // useEffect(() => {
-  //   if (isAuthenticated) {
-  //     navigate("/homepage");
-  //   }
-  // }, [isAuthenticated, navigate]); // Dependency array includes isAuthenticated
-
   return (
-    <div className="min-h-screen bg-gray-100">
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <div className="w-full max-w-md p-8 space-y-6 bg-white shadow-lg rounded-lg">
-          <h1 className="text-2xl font-bold text-center text-gray-800">{displayText}</h1>
-          <form onSubmit={(e) => handleLogin(e, email, password, navigate)} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Email</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="w-full px-4 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Password</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="w-full px-4 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <button
-              type="submit"
-              className="w-full px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              Login
-            </button>
-          </form>
-
-          {/* Button for "Login with channelI" */}
+    <div className="min-h-screen flex items-center justify-center  ">
+      <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-lg animate-fadeIn">
+        <h1 className="text-3xl font-semibold text-center text-gray-800 mb-6 animate-pulse">{displayText}</h1>
+        
+        <form onSubmit={(e) => handleLogin(e, email, password, navigate)} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-600">Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              placeholder="you@example.com"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-600">Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              placeholder="••••••••"
+            />
+          </div>
           <button
-            onClick={()=> {
-              console.log("hello");
-              const authUrl = "http://localhost:8000/users/auth/oauth"
-              window.location.href = authUrl;
-            }}
-            className="w-full px-4 py-2 mt-4 text-blue-600 bg-white border-2 border-blue-600 rounded-md hover:bg-blue-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            type="submit"
+            className="w-full py-3 mt-4 bg-indigo-600 text-white rounded-lg shadow-md hover:bg-indigo-700 transition-transform transform hover:scale-105"
           >
-            Login with channelI
+            Login
           </button>
+        </form>
+
+        {/* Divider with text */}
+        <div className="flex items-center my-6">
+          <hr className="flex-grow border-gray-300" />
+          <span className="mx-2 text-sm text-gray-500">OR</span>
+          <hr className="flex-grow border-gray-300" />
+        </div>
+
+        {/* Login with ChannelI button */}
+        <button
+          onClick={() => {
+            const authUrl = "http://localhost:8000/users/auth/oauth";
+            window.location.href = authUrl;
+          }}
+          className="w-full py-3 text-indigo-600 bg-white border-2 border-indigo-600 rounded-lg shadow-md hover:bg-indigo-600 hover:text-white transition-transform transform hover:scale-105"
+        >
+          Login with ChannelI
+        </button>
+
+        {/* Footer with subtle animation */}
+        <div className="mt-6 text-sm text-gray-400 text-center animate-fadeIn">
+          By logging in, you agree to our <a href="#" className="text-indigo-600 hover:underline">Terms of Service</a>
         </div>
       </div>
     </div>
