@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Navbar from '../../utilities/Navbar-main'; // Adjust path as necessary
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie'
 
@@ -14,6 +13,8 @@ function EditProfilePage() {
     existingProfileImage: '', // State to store the existing profile image URL
     isDeveloper: false,
     alias: '',
+    email_host_password: '',
+    email_host_user: '',
   });
 
   // Fetch user data from the API when the component mounts
@@ -36,6 +37,8 @@ function EditProfilePage() {
           existingProfileImage: response.data.profilePhoto || '', // Store existing image URL
           isDeveloper: response.data.isDeveloper || false,
           alias: response.data.alias || '',
+          email_host_password: response.data.email_host_password || '',
+          email_host_user: response.data.email_host_user|| '',
         });
       } catch (error) {
         console.error('Error fetching user data:', error);
@@ -62,8 +65,12 @@ function EditProfilePage() {
     if (formData.profileImage) data.append('profilePicture', formData.profileImage); // Only append if a new image is uploaded
     data.append('isDeveloper', formData.isDeveloper);
     data.append('alias', formData.alias);
+    data.append('email_host_password', formData.email_host_password);
+    data.append('email_host_user', formData.email_host_user);
+    console.log(formData.email_host_password)
 
     try {
+      
       const response = await axios.post('http://127.0.0.1:8000/users/change-user-info/', data, {
         withCredentials: true,
 
@@ -121,6 +128,28 @@ function EditProfilePage() {
               type="text"
               name="name"
               value={formData.name}
+              onChange={handleChange}
+              required
+              className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">Email for sending mails</label>
+            <input
+              type="email"
+              name="email_host_user"
+              value={formData.email_host_user}
+              onChange={handleChange}
+              required
+              className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">Email host password</label>
+            <input
+              type="password"
+              name="email_host_password"
+              value={formData.email_host_password}
               onChange={handleChange}
               required
               className="mt-1 block w-full p-2 border border-gray-300 rounded-md"

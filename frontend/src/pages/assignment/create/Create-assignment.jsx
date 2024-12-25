@@ -15,7 +15,7 @@ function UploadAssignment() {
   const [selectedReviewees, setSelectedReviewees] = useState([]);
   const [availableUsers, setAvailableUsers] = useState([]);
   const [workspaceDetails, setWorkspaceDetails] = useState([]);
-  
+  const [sendEmails, setSendEmails] = useState(false); // New state for the email checkbox
 
   // Fetch available users from the API
   useEffect(() => {
@@ -31,24 +31,11 @@ function UploadAssignment() {
         setAvailableUsers(response.data.workspace.participants);
       } catch (error) {
         console.error('Error fetching project details:', error);
-    }
-  }
-    // const fetchUsers = async () => {
-    //   try {
-    //     const response = await axios.get('http://127.0.0.1:8000/users/all-users-details/', {
-    //       headers: {
-    //         Authorization: `Bearer ${Cookies.get('accessToken')}`,
-    //       }
-    //     });
-    //     setAvailableUsers(response.data.users);
-    //   } catch (error) {
-    //     console.error('Error fetching users:', error);
-    //   }
-    // };
+      }
+    };
 
-    // fetchUsers();
     fetchProjectDetails();
-  }, []);
+  }, [roomname]);
 
   const handleUserSelect = (userEmail, type) => {
     if (type === 'reviewer') {
@@ -77,6 +64,7 @@ function UploadAssignment() {
       reviewers: selectedReviewers,
       reviewees: selectedReviewees,
       roomname: roomname,
+      send_emails: sendEmails ? 1 : 0, // Send 1 if true, 0 if false
     };
 
     try {
@@ -195,7 +183,19 @@ function UploadAssignment() {
             </div>
           </div>
 
-          {/* Submit Button */}
+          {/* Send Email Checkbox */}
+          <div className="mb-8">
+            <label className="flex items-center text-sm font-semibold text-gray-700">
+              <input
+                type="checkbox"
+                checked={sendEmails}
+                onChange={() => setSendEmails(!sendEmails)}
+                className="w-5 h-5 rounded border-2 border-purple-500 text-purple-600 focus:ring-purple-500"
+              />
+              <span className="ml-3 text-gray-700">Send emails to selected users</span>
+            </label>
+          </div>
+
           <div className="text-center">
             <button
               onClick={handleSubmit}
