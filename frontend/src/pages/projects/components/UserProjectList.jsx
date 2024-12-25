@@ -12,9 +12,18 @@ const ProjectList = ({ projects, onView, onDelete, onGroupChat, onAssignments })
           key={project.roomname} 
           className="p-6 border border-gray-300 rounded-lg shadow-lg transition-transform duration-300 hover:shadow-xl hover:-translate-y-1 bg-white animate-fade-in"
         >
+          {/* Project Image */}
+          <div className="mb-4">
+            <img 
+              src={`http://127.0.0.1:8000${project.group_image}` || 'https://via.placeholder.com/150'} 
+              alt={project.name} 
+              className="w-full h-48 object-cover rounded-lg"
+            />
+          </div>
+
           {/* Project Title */}
           <h3 className="text-xl font-bold text-gray-900 mb-2">{project.name}</h3>
-          <p className="text-sm text-gray-600 mb-2">{project.description}</p>
+          <p className="text-sm text-gray-600 mb-2">{project.description || 'No description available'}</p>
           <p className="text-sm text-gray-500">Deadline: {new Date(project.deadline).toLocaleString()}</p>
           <p className="text-sm text-gray-500 mb-4">Room Name: {project.roomname}</p>
 

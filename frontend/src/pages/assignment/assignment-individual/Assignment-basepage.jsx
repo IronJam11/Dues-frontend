@@ -12,9 +12,9 @@ const AssignmentBasePage = () => {
     const { unique_name } = useParams();
     const navigate = useNavigate();
 
-    const [isReviewer, setIsReviewer] = useState(false); // Track if the user is a reviewer
-    const [loading, setLoading] = useState(true); // Track loading state
-    const [error, setError] = useState(null); // Track any error from the API call
+    const [isReviewer, setIsReviewer] = useState(false); 
+    const [loading, setLoading] = useState(true); 
+    const [error, setError] = useState(null); 
 
     const checkPermission = async () => {
         try {
@@ -61,9 +61,10 @@ const AssignmentBasePage = () => {
                     Authorization: `Bearer ${Cookies.get('accessToken')}`,
                 },
             });
-            console.log(response.data);
+            alert("Reviewees notified!");
         } catch (err) {
             setError('Error notifying reviewee.');
+            alert("Failed to notify reviewees");
             console.error(err);
         }
     };
@@ -104,12 +105,11 @@ const AssignmentBasePage = () => {
                     </button>
                 </div>
 
-                {/* Subtasks Section */}
                 <div className="bg-white shadow-md rounded-lg p-6 mb-6">
                     <SubtasksComponent unique_name={unique_name} />
                 </div>
 
-                {/* Conditionally Render Submissions Component based on permission */}
+    
                 <div className="bg-white shadow-md rounded-lg p-6 mb-6">
                     {isReviewer ? (
                         <SubmissionsReviewerComponent unique_name={unique_name} />
@@ -118,7 +118,6 @@ const AssignmentBasePage = () => {
                     )}
                 </div>
 
-                {/* Conditionally Render Iterations Component for Reviewee */}
                 {!isReviewer && (
                     <div className="bg-white shadow-md rounded-lg p-6">
                         <IterationsComponent unique_name={unique_name} />

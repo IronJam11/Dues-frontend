@@ -1,4 +1,3 @@
-// UserProjects.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; 
@@ -21,7 +20,7 @@ function UserProjects() {
             Authorization: `Bearer ${token}`
           }
         });
-        console.log("Users workspaces:- ",response.data);
+        console.log("Users workspaces:- ", response.data);
         setProjects(response.data);
       } catch (error) {
         console.error('Error fetching user projects:', error);
