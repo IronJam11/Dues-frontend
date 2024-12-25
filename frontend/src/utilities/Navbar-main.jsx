@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { handleLogout } from '../functions/handleLogout';
 import { fetchUserDetails } from '../functions/fetchUserDetails';
-import { motion } from 'framer-motion'; // Import framer-motion
+import { motion } from 'framer-motion'; 
 
 function Navbar() {
   const navigate = useNavigate();
@@ -23,7 +23,6 @@ function Navbar() {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -81,7 +80,7 @@ function Navbar() {
         </button>
       </div>
 
-      {/* Sidebar */}
+  
       <div
         className={`fixed inset-y-0 left-0 transform ${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
@@ -94,7 +93,7 @@ function Navbar() {
             </svg>
           </button>
           <nav className="space-y-4">
-            {["assignments", "projects", "homepage", "user-profiles"].map((route) => (
+            {["assignments", "workspaces", "homepage", ].map((route) => (
               <Link
                 to={`/${route}`}
                 key={route}
@@ -106,10 +105,8 @@ function Navbar() {
           </nav>
         </div>
       </div>
-
-      {/* Regular Navigation Links (Visible on Medium and Large Screens) */}
       <div className="hidden md:flex space-x-8 items-center">
-        {["assignments", "projects", "homepage", , "user-profiles", "leaderboard", "tags", "ideas"].map((route) => (
+        {["assignments", "workspaces", "homepage", "leaderboard", "tags", "ideas"].map((route) => (
           <Link
             to={`/${route}`}
             key={route}

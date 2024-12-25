@@ -8,30 +8,30 @@ import Cookies from 'js-cookie';
 const SubmissionsRevieweeComponent = ({ unique_name }) => {
     const [submissions, setSubmissions] = useState([]);
     const [showSubmissions, setShowSubmissions] = useState(false);
-    const [loading, setLoading] = useState(false); // Loading state for better UX
+    const [loading, setLoading] = useState(false); 
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchSubmissions = async () => {
-            setLoading(true); // Start loading when fetching data
+            setLoading(true); 
             try {
                 const response = await axios.get(`http://127.0.0.1:8000/assignments/list-my-submissions/${unique_name}/`, {
                     headers: {
                         Authorization: `Bearer ${Cookies.get('accessToken')}`
                     }
                 });
-                setSubmissions(response.data.submissions || []); // Ensure it's always an array
+                setSubmissions(response.data.submissions || []); 
             } catch (error) {
                 setError('Error fetching submissions: ' + (error.response?.data?.error || error.message));
             } finally {
-                setLoading(false); // Stop loading once data is fetched
+                setLoading(false); 
             }
         };
         if (showSubmissions) {
             fetchSubmissions();
         }
-    }, [unique_name, showSubmissions]); // Fetch only when dropdown is clicked (showSubmissions is true)
+    }, [unique_name, showSubmissions]); 
 
     const handleDownloadAllFiles = async (files) => {
         const zip = new JSZip();

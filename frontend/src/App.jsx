@@ -101,13 +101,13 @@ function App() {
         {/* Projects */}
         <Route path="/new-project" element={<CreateProject />} />
         {/* <Route path="/projects" element={<UserProjects />} /> */}
-        <Route path="/projects" element={<ProtectedRoute element={<UserProjects />} />} />
+        <Route path="/workspaces" element={<ProtectedRoute element={<UserProjects />} />} />
        
-        <Route path="projects/project-chat/:enrollmentNo/:room" element={<GroupChatPage />} />
-        <Route path="projects/project-chat/:enrollmentNo/:room/add-users" element={<AddUsersPage />} />
-        <Route path="projects/project-info/:roomname" element={<ProjectDetail/>} />
-        <Route path="projects/project-info/:roomname/add-users" element={<AddUsersToWorkspace/>} />
-        <Route path="projects/project-info/:roomname/:enrollmentNo" element={<UserProfileEdit/>} />
+        <Route path="workspaces/project-chat/:enrollmentNo/:room" element={<GroupChatPage />} />
+        <Route path="workspaces/project-chat/:enrollmentNo/:room/add-users" element={<AddUsersPage />} />
+        <Route path="workspaces/project-info/:roomname" element={<ProjectDetail/>} />
+        <Route path="workspaces/project-info/:roomname/add-users" element={<AddUsersToWorkspace/>} />
+        <Route path="workspaces/project-info/:roomname/:enrollmentNo" element={<UserProfileEdit/>} />
         <Route path="workspaces/assignments/:roomname" element={<AssignmentPage />} />
         <Route path="workspaces/new-assignment/:roomname" element={<UploadAssignment/>} />
         <Route path="projects/assignments/:roomname" element={<ProjectAssignmentsPage/>} />

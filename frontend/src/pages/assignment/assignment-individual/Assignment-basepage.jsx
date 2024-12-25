@@ -47,6 +47,27 @@ const AssignmentBasePage = () => {
         navigate(-1);
     };
 
+    const notifyReviweee = async () => {
+        try {
+            const response = await axios.post(`http://localhost:8000/notifications/notify-reviewees/`,
+                {
+                    'unique_name': unique_name,
+                    'message':`Assignment ${unique_name} is pending`,
+                    'type':'reminder',
+                },
+                {
+                withCredentials: true,
+                headers: {
+                    Authorization: `Bearer ${Cookies.get('accessToken')}`,
+                },
+            });
+            console.log(response.data);
+        } catch (err) {
+            setError('Error notifying reviewee.');
+            console.error(err);
+        }
+    };
+
     const handleAddSubtask = () => {
         navigate(`new-subtask/`);
     };
@@ -68,6 +89,12 @@ const AssignmentBasePage = () => {
                         className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition-colors duration-200"
                     >
                         Back to Assignments
+                    </button>
+                    <button
+                        onClick={notifyReviweee}
+                        className="bg-yellow-500 text-white py-2 px-4 rounded hover:bg-yellow-600 transition-colors duration-200"
+                    >
+                       Notify Reviewees
                     </button>
                     <button
                         onClick={handleAddSubtask}
