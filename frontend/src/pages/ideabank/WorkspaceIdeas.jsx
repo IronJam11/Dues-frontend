@@ -8,7 +8,7 @@ import { Bar } from 'react-chartjs-2';
 import { CategoryScale } from 'chart.js';
 import Modal from 'react-modal'; // Import Modal for popups
 import { Link } from 'react-router-dom'; 
-
+import { useParams } from 'react-router-dom';
 import { registerables } from 'chart.js';
 
 Chart.register(...registerables);
@@ -16,7 +16,8 @@ Chart.register(CategoryScale);
 
 Modal.setAppElement('#root'); // Required for accessibility when using modals
 
-const IdeasList = () => {
+const WorkspaceIdeasList = () => {
+  const { roomname } = useParams();
   const [ideas, setIdeas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -30,7 +31,7 @@ const IdeasList = () => {
     // Fetch initial ideas data
     const fetchIdeas = async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:8000/ideas/all-ideas/', {
+        const response = await axios.get(`http://127.0.0.1:8000/ideas/all-workspace-ideas/${roomname}/`, {
           withCredentials: true,
           headers: {
             Authorization: `Bearer ${Cookies.get("accessToken")}`,
@@ -204,6 +205,12 @@ const IdeasList = () => {
       <div>
         <div className="container mx-auto p-8 flex justify-between items-center">
           <h1 className="text-3xl font-bold mb-4">All Ideas</h1>
+          <button
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            onClick={() => navigate('create-new-idea')}
+          >
+            Propose an Idea
+          </button>
         </div>
   
         <div className="container mx-auto p-8">
@@ -215,9 +222,7 @@ const IdeasList = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {ideas.map((idea) => (
                 <div key={idea.unique_name} className="bg-white shadow-md rounded-lg p-4 mb-4">
-                  
-                  <h1 className="text-3xl font-bold truncate">{idea.title}</h1>
-                  <h3 className="text-3l font-bold mb-4">Workspace: "{idea.workspace}"</h3>
+                  <h2 className="text-xl font-semibold truncate">{idea.title}</h2>
                   <p className="mt-2 text-sm text-gray-600 truncate">{idea.description}</p>
   
                   {/* Bar plot for votes */}
@@ -304,7 +309,6 @@ const IdeasList = () => {
         {/* Mapping through the users */}
         {selectedIdea.users && selectedIdea.users.length > 0 ? (
           <div className="mt-4">
-            <h3 className="text-3xl font-bold mb-4">Workspace:- {selectedIdea.workspace}</h3>
             <h3 className="text-lg font-semibold">Users involved:</h3>
             <ul className="list-disc list-inside mt-2">
               {selectedIdea.users.map((user, index) => (
@@ -339,4 +343,4 @@ const IdeasList = () => {
   
 };
 
-export default IdeasList;
+export default WorkspaceIdeasList;

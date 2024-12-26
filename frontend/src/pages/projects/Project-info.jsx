@@ -63,15 +63,22 @@ const ProjectDetail = () => {
         <h1 className="text-4xl font-extrabold text-gray-800 mb-6">{workspace.name}</h1>
         <p className="text-lg text-gray-600 mb-4">{workspace.description}</p>
 
-        {/* Add Users Button */}
         {workspace.isAdmin && (
+        <div className="absolute top-8 right-8 flex gap-4">
           <button
-            className="absolute top-8 right-8 bg-green-500 text-white px-4 py-2 rounded-lg shadow hover:bg-green-600"
+            className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow hover:bg-green-600"
+            onClick={() => navigate(`/workspaces/${roomname}/ideas`)}
+          >
+            Ideas 
+          </button>
+          <button
+            className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow hover:bg-green-600"
             onClick={() => navigate(`add-users`)}
           >
             Add Users
           </button>
-        )}
+        </div>
+      )}
 
         <div className="mb-8 flex flex-col md:flex-row items-start gap-8">
           <img

@@ -17,7 +17,6 @@ function AssignmentPage() {
   const navigate = useNavigate();
   const isAuthenticated = useAuth();
 
-  // Fetch if the user is a reviewer
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
@@ -111,7 +110,7 @@ function AssignmentPage() {
   };
 
   const handleEditAssignment = (unique_name) => {
-    navigate(`${unique_name}/edit-assignment`)
+    navigate(`/assignments/${unique_name}/edit-assignment`)
     console.log(`Edit assignment with ID: ${unique_name}`);
   };
 

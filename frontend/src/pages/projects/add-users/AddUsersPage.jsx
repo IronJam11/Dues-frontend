@@ -105,7 +105,7 @@ const AddUsersToWorkspace = () => {
                 onClick={() => handleUserToggle(user.enrollmentNo)}
               >
                 <img
-                  src={user.profilePicture || '/default-profile.png'}
+                  src={`http://127.0.0.1:8000${user.profilePicture}`|| '/default-profile.png'}
                   alt={user.name}
                   className="w-24 h-24 object-cover rounded-full mb-4"
                 />

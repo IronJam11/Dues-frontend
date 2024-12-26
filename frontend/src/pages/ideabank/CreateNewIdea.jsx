@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Navbar from '../../utilities/Navbar-main'; // Assuming you have a Navbar component
 import Cookies from 'js-cookie';
+import { useParams, useNavigate } from 'react-router-dom';
 
 const IdeaSubmissionForm = () => {
+  const { roomname } = useParams();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [urls, setUrls] = useState(['']); // Array to handle dynamic URLs
@@ -16,7 +18,7 @@ const IdeaSubmissionForm = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:8000/users/all-users-details/',
+        const response = await axios.get(`http://127.0.0.1:8000/workspaces/workspace-details/${roomname}/`,
             {
                 withCredentials: true,
                 headers: 
@@ -26,7 +28,7 @@ const IdeaSubmissionForm = () => {
             }
         );
         console.log("Data:-",response.data)
-        setUsers(response.data.users); // Assuming API returns an array of user objects
+        setUsers(response.data.workspace.participants); // Assuming API returns an array of user objects
       } catch (err) {
         setError('Failed to fetch users');
       }
@@ -49,7 +51,7 @@ const IdeaSubmissionForm = () => {
             users: selectedUsers, // Send selected user IDs
           });
       const response = await axios.post(
-        'http://127.0.0.1:8000/ideas/create-new-idea/',
+        `http://127.0.0.1:8000/ideas/create-workspace-idea/${roomname}/`,
         {
           title,
           description,

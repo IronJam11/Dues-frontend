@@ -40,6 +40,7 @@ import UserProfileEdit from './pages/projects/user-profiles/EditUserInfo';
 import AddUsersToWorkspace from './pages/projects/add-users/AddUsersPage';
 import Homepage from './pages/HomePage';
 import GeneralisedAssignmentPage from './pages/assignment/GeneralisedAllAssignmentsPage';
+import WorkspaceIdeasList from './pages/ideabank/WorkspaceIdeas';
 
 // Navbar component that selects the correct navbar based on the route
 function NavbarSelector() {
@@ -80,6 +81,7 @@ function App() {
         <Route path="workspaces/assignments/new-subtask/:unique_name" element={<CreateSubtask />} />
         <Route path="workspaces/assignments/:roomname/:unique_name/new-subtask/" element={<CreateSubtask />} />
         <Route path="/assignments/:unique_name/edit-assignment" element={<EditAssignment />} />
+        <Route path="/assignments/:unique_name/edit-assignment" element={<EditAssignment />} />
         <Route path="/assignments" element={<GeneralisedAssignmentPage/>} />
         <Route path="/assignments/new" element={<UploadAssignment />} />
         <Route path="/submit-assignment/:unique_name" element={<AssignmentSubmissionPage />} />
@@ -109,8 +111,14 @@ function App() {
         <Route path="workspaces/project-info/:roomname/add-users" element={<AddUsersToWorkspace/>} />
         <Route path="workspaces/project-info/:roomname/:enrollmentNo" element={<UserProfileEdit/>} />
         <Route path="workspaces/assignments/:roomname" element={<AssignmentPage />} />
+
+        <Route path="workspaces/:roomname/ideas" element={<WorkspaceIdeasList/>} />
+        <Route path="workspaces/:roomname/ideas/create-new-idea" element={<IdeaSubmissionForm/>} />
+
         <Route path="workspaces/new-assignment/:roomname" element={<UploadAssignment/>} />
+
         <Route path="projects/assignments/:roomname" element={<ProjectAssignmentsPage/>} />
+  
        
         {/* Debugging */}
         <Route path="/user-activity" element={<UserActivityStatus/>} />
